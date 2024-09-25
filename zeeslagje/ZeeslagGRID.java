@@ -2,15 +2,17 @@ import java.awt.*;
 import javax.swing.*;
 
 public class ZeeslagGRID {
-    int boardWidth = 800;
+    int boardWidth = 1300;
     int boardHeight = 850;
 
     JFrame frame = new JFrame("Zeeslag");
     JLabel textLabel = new JLabel();
     JPanel textPanel = new JPanel();
     JPanel boardPanel = new JPanel();
+    JPanel boardPanel2 = new JPanel();
 
-    JButton[][] board = new JButton[8][8];
+    JButton[][] board1 = new JButton[8][8];
+    JButton[][] board2 = new JButton[8][8];
 
     ZeeslagGRID() {
         frame.setVisible(true);
@@ -31,16 +33,31 @@ public class ZeeslagGRID {
         textPanel.add(textLabel);
         frame.add(textPanel,BorderLayout.NORTH);
 
-        boardPanel.setLayout(new GridLayout(8, 8));
-        boardPanel.setBackground(Color.darkGray);
-        frame.add(boardPanel);
+        boardPanel2.setLayout(new GridLayout(8, 8));
+        boardPanel2.setPreferredSize(new Dimension(500,500));
+        boardPanel2.setBackground(Color.darkGray);
+        frame.add(boardPanel2, BorderLayout.EAST);
 
-        for (int r = 0; r < 8; r++) {
+        for (int r = 0; r < 8 ; r++) {
             for (int c = 0; c < 8; c++) {
                 JButton tile = new JButton();
                 tile.setBackground(Color.darkGray);
-                tile.setPreferredSize(new Dimension(100,100));
-                board[r][c] = tile;
+                tile.setPreferredSize(new Dimension(50,50));
+                board2[r][c] = tile;
+                boardPanel2.add(tile);
+            }
+        }
+        boardPanel.setLayout(new GridLayout(8, 8));
+        boardPanel.setPreferredSize(new Dimension(500,500));
+        boardPanel.setBackground(Color.darkGray);
+        frame.add(boardPanel, BorderLayout.WEST);
+
+        for (int r = 0; r < 8 ; r++) {
+            for (int c = 0; c < 8; c++) {
+                JButton tile = new JButton();
+                tile.setBackground(Color.darkGray);
+                tile.setPreferredSize(new Dimension(500,500));
+                board1[r][c] = tile;
                 boardPanel.add(tile);
             }
         }
