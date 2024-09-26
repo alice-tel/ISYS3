@@ -1,3 +1,5 @@
+package games.tictactoe;
+
 import java.awt.*;
 import javax.swing.*;
 
