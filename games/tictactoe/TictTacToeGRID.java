@@ -23,7 +23,7 @@ public class TictTacToeGRID {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
-        textLabel.setBackground(Color.lightGray);
+        textLabel.setBackground(Color.darkGray);
         textLabel.setForeground(Color.black);
         textLabel.setFont(new Font("Arial", Font.BOLD, 50));
         textLabel.setHorizontalAlignment(JLabel.CENTER);

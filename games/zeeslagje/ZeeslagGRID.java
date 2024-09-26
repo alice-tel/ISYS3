@@ -11,8 +11,7 @@ public class ZeeslagGRID {
     JPanel boardPanel = new JPanel();
     JPanel boardPanel2 = new JPanel();
 
-    JButton[][] board1 = new JButton[8][8];
-    JButton[][] board2 = new JButton[8][8];
+    JButton[][] board = new JButton[8][16];
 
     ZeeslagGRID() {
         frame.setVisible(true);
@@ -33,22 +32,8 @@ public class ZeeslagGRID {
         textPanel.add(textLabel);
         frame.add(textPanel,BorderLayout.NORTH);
 
-        boardPanel2.setLayout(new GridLayout(8, 8));
-        boardPanel2.setPreferredSize(new Dimension(500,500));
-        boardPanel2.setBackground(Color.darkGray);
-        frame.add(boardPanel2, BorderLayout.EAST);
-
-        for (int r = 0; r < 8 ; r++) {
-            for (int c = 0; c < 8; c++) {
-                JButton tile = new JButton();
-                tile.setBackground(Color.darkGray);
-                tile.setPreferredSize(new Dimension(50,50));
-                board2[r][c] = tile;
-                boardPanel2.add(tile);
-            }
-        }
-        boardPanel.setLayout(new GridLayout(8, 8));
-        boardPanel.setPreferredSize(new Dimension(500,500));
+        boardPanel.setLayout(new GridLayout(8, 16));
+        boardPanel.setForeground(Color.lightGray);
         boardPanel.setBackground(Color.darkGray);
         frame.add(boardPanel, BorderLayout.WEST);
 
@@ -56,8 +41,21 @@ public class ZeeslagGRID {
             for (int c = 0; c < 8; c++) {
                 JButton tile = new JButton();
                 tile.setBackground(Color.darkGray);
-                tile.setPreferredSize(new Dimension(500,500));
-                board1[r][c] = tile;
+                tile.setPreferredSize(new Dimension(50,50));
+                board[r][c] = tile;
+                boardPanel.add(tile);
+            }
+
+            JButton button = new JButton();
+            button.setBackground(Color.darkGray);
+            button.setPreferredSize(new Dimension(50,850));
+            button.setLabel("Next");
+
+            for (int c = 0; c < 8; c++) {
+                JButton tile = new JButton();
+                tile.setBackground(Color.darkGray);
+                tile.setPreferredSize(new Dimension(50,50));
+                board[r][c] = tile;
                 boardPanel.add(tile);
             }
         }

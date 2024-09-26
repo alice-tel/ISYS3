@@ -57,7 +57,7 @@ public class TicTacToe {
                 String position = getPositionString(r, c);
                 JButton tile = new JButton();
                 tile.setFont(new Font("Arial", Font.BOLD, 100));
-                tile.setForeground(Color.white);
+                tile.setForeground(Color.lightGray);
                 tile.setBackground(Color.darkGray);
                 tile.setFocusPainted(false);
                 board[r][c] = tile;
