@@ -20,7 +20,7 @@ public class TicTacToeGame extends GameFramework {
      * base starting player set to X
      */
     public TicTacToeGame() {
-        super(3); // generate a 3x3 grid from the parent framework
+        super(3,3); // generate a 3x3 grid from the parent framework
         currentPlayer = 'X'; // X as the starting player
         gameActive = true; // if this point is reached, game should be active
         setResizable(false);
@@ -77,20 +77,20 @@ public class TicTacToeGame extends GameFramework {
      */
     private void hightlightWinningCondition(int condition, int row, int col) {
         if (condition == 0) { // row win
-            for (int j = 0; j < gridSize; j++) {
+            for (int j = 0; j < rows; j++) {
                 gridButtons[row][j].setForeground(Color.GREEN);
             }
         } else if (condition == 1) { // column win
-            for (int i = 0; i < gridSize; i++) {
+            for (int i = 0; i < columns; i++) {
                 gridButtons[i][col].setForeground(Color.GREEN);
             }
         } else if (condition == 2) { // diagonal win (top left to bottom right)
-            for (int i = 0; i < gridSize; i++) {
+            for (int i = 0; i < rows; i++) {
                 gridButtons[i][i].setForeground(Color.GREEN);
             }
         } else if (condition == 3) {
-            for (int i = 0; i < gridSize; i++) {
-                gridButtons[i][gridSize - 1 - i].setForeground(Color.GREEN);
+            for (int i = 0; i < rows; i++) {
+                gridButtons[i][columns - 1 - i].setForeground(Color.GREEN);
             }
         }
     }
@@ -105,7 +105,7 @@ public class TicTacToeGame extends GameFramework {
      */
     private int checkForWin(char player) {
         // Check rows for a win
-        for (int i = 0; i < gridSize; i++) {
+        for (int i = 0; i < rows; i++) {
             if (!gridButtons[i][0].getText().isEmpty() &&
                     !gridButtons[i][1].getText().isEmpty() &&
                     !gridButtons[i][2].getText().isEmpty() &&
@@ -117,7 +117,7 @@ public class TicTacToeGame extends GameFramework {
         }
 
         // Check columns for a win
-        for (int i = 0; i < gridSize; i++) {
+        for (int i = 0; i < columns; i++) {
             if (!gridButtons[0][i].getText().isEmpty() &&
                     !gridButtons[1][i].getText().isEmpty() &&
                     !gridButtons[2][i].getText().isEmpty() &&
@@ -156,8 +156,8 @@ public class TicTacToeGame extends GameFramework {
      * @return bool (empty cells present or not)
      */
     private boolean isGridFull() {
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
                 if (gridButtons[i][j].getText().isEmpty()) {
                     return false; // empty cell remaining
                 }

@@ -10,17 +10,20 @@ import java.awt.*;
  */
 public abstract class GameFramework extends JFrame {
     protected JButton[][] gridButtons;
-    protected int gridSize;
+    protected int columns;
+    protected int rows;
     protected JLabel statusLabel;
 
     /**
      * initializes a grid of buttons of x by x size set in the param
      *
-     * @param gridSize int
+     * @param columns int
+     * @param rows int
      */
-    public GameFramework(int gridSize) {
-        this.gridSize = gridSize;
-        gridButtons = new JButton[gridSize][gridSize];
+    public GameFramework(int columns, int rows) {
+        this.columns = columns;
+        this.rows = rows;
+        gridButtons = new JButton[rows][columns];
         setupUI();
     }
 
@@ -43,10 +46,10 @@ public abstract class GameFramework extends JFrame {
         add(statusLabel, BorderLayout.NORTH); // set the current player status label at the top
 
         JPanel gridPanel = new JPanel();
-        gridPanel.setLayout(new GridLayout(gridSize, gridSize)); // layout for the buttons on the grid
+        gridPanel.setLayout(new GridLayout(rows, columns)); // layout for the buttons on the grid
 
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
                 gridButtons[i][j] = new JButton("");
                 gridButtons[i][j].setFont(new Font("Arial", Font.PLAIN, 60));
                 int finalI = i;
@@ -74,8 +77,8 @@ public abstract class GameFramework extends JFrame {
     protected abstract void onGridButtonClicked(int row, int col);
 
     protected void resetGrid() {
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
                 gridButtons[i][j].setText("");
                 gridButtons[i][j].setBackground(null);
             }
