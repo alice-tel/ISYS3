@@ -1,4 +1,4 @@
-package games.zeeslagje;
+package game.games.zeeslagje;
 
 import java.awt.*;
 import javax.swing.*;

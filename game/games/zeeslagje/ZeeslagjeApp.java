@@ -1,4 +1,4 @@
-package games.zeeslagje;
+package game.games.zeeslagje;
 
 public class ZeeslagjeApp {
     public static void main(String[] args) {
