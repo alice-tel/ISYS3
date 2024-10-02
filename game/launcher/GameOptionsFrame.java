@@ -1,5 +1,6 @@
 package game.launcher;
 
+import game.games.battleship.BattleshipGame;
 import game.games.tictactoe.TicTacToeGame;
 
 import javax.swing.*;
@@ -57,7 +58,10 @@ public class GameOptionsFrame extends JFrame {
             new TicTacToeGame(); // Start PvP Tic Tac Toe game
         } else if (gameName.equals("Tic-Tac-Toe") && mode.equals("Player vs Computer")) {
             new TicTacToeGame(); // Start Tic Tac Toe game, replace with PvC game when finished
+        } else if (gameName.equals("Battleships") && mode.equals("Player vs Player")){
+            new BattleshipGame(); // Start battleship player vs player
         }
+
         System.out.println("Starting " + gameName + " in " + mode + " mode.");
     }
 }

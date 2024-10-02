@@ -18,7 +18,7 @@ public class GameSelectionFrame extends JFrame {
 
         JPanel panel = new JPanel();
         JButton ticTacToeButton = new JButton("Tic-Tac-Toe");
-        JButton battleshipButton = new JButton("Battleship");
+        JButton battleshipButton = new JButton("Battleships");
 
         ticTacToeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -27,7 +27,7 @@ public class GameSelectionFrame extends JFrame {
         });
         battleshipButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new GameOptionsFrame("Battleship");
+                new GameOptionsFrame("Battleships");
             }
         });
 
