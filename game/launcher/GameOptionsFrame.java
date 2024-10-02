@@ -53,8 +53,10 @@ public class GameOptionsFrame extends JFrame {
      * @param mode String (selected game more (pve, pvp, eve))
      */
     private void startGame(String gameName, String mode) {
-        if (gameName.equals("Tic-Tac-Toe")) {
-            new TicTacToeGame(); // Start Tic Tac Toe game
+        if (gameName.equals("Tic-Tac-Toe") && mode.equals("Player vs Player")) {
+            new TicTacToeGame(); // Start PvP Tic Tac Toe game
+        } else if (gameName.equals("Tic-Tac-Toe") && mode.equals("Player vs Computer")) {
+            new TicTacToeGame(); // Start Tic Tac Toe game, replace with PvC game when finished!!
         }
         System.out.println("Starting " + gameName + " in " + mode + " mode.");
     }
