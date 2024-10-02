@@ -4,13 +4,7 @@ import game.framework.GameFramework;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * because this is an abstract class, don't forget to implement the parent
- * getGameName and onGridButtonClicked with overrides
- * getGameName is used in the GameOptionsFrame to add a button that opens the corresponding game
- * onGridButtonClicked adds action event listeners to the grid buttons
- **/
-public class TicTacToeGame extends GameFramework {
+public class TicTacToeCOMgame extends GameFramework {
     private char currentPlayer;
     private boolean gameActive;
 
@@ -19,25 +13,22 @@ public class TicTacToeGame extends GameFramework {
      * initializes a 3x3 grid
      * base starting player set to X
      */
-    public TicTacToeGame() {
+    public TicTacToeCOMgame() {
         super(3,3); // generate a 3x3 grid from the parent framework
         currentPlayer = 'X'; // X as the starting player
-        gameActive = true; // if this point is reached, game should be active
+        gameActive = true; // if this point is reached, the game should be active
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Tic-Tac-Toe");
+        setTitle("Tic-Tac-Toe vs COM");
         setVisible(true);
     }
 
     /**
      * set the current game name
-     *
      * @return String (game name)
      */
     @Override
-    protected String getGameName() {
-        return "Tic-Tac-Toe";
-    }
+    protected String getGameName() { return "Tic-Tac-Toe"; }
 
     /**
      * add action events to all buttons to make game input either X or O depending on current player turn
@@ -48,11 +39,12 @@ public class TicTacToeGame extends GameFramework {
     @Override
     protected void onGridButtonClicked(int row, int col) {
         if (!gameActive || !gridButtons[row][col].getText().isEmpty()) {
-            return; // ignore if the game is over or the cell is already filled
+            return; // ignore if game is over or the cell is already filled
         }
 
-        gridButtons[row][col].setText(String.valueOf(currentPlayer)); // mark grid
-        int winningCondition = checkForWin(currentPlayer); // check for win and get the right line
+        gridButtons[row][col].setText(String.valueOf(currentPlayer));
+        int winningCondition = checkForWin(currentPlayer);
+
         if (winningCondition != -1) {
             //JOptionPane.showMessageDialog(this, "Player " + currentPlayer + " wins!");
             highlightWinningCondition(winningCondition, row, col);
@@ -64,12 +56,115 @@ public class TicTacToeGame extends GameFramework {
             gameActive = false; // draw, game over
         } else {
             currentPlayer = (currentPlayer == 'X') ? 'O' : 'X'; // switch players
-            statusLabel.setText("Current player: " + currentPlayer);
+            statusLabel.setText("Current player: " +  currentPlayer);
+            if (currentPlayer == 'O') {
+                computerMove(); // trigger computer move
+            }
         }
     }
 
     /**
-     * hightlights the corresponding line during a win
+     * Computer makes a move using the Minimax algorithm
+     */
+    private void computerMove() {
+        if (!gameActive) return; // only continue of the game is still active
+
+        int[] bestMove = findBestMove();
+        // check if the best move is valid in the first place
+        if (bestMove[0] != -1 && bestMove[1] != -1) {
+            gridButtons[bestMove[0]][bestMove[1]].setText(String.valueOf(currentPlayer));
+        }
+
+        int winningCondition = checkForWin(currentPlayer);
+        if (winningCondition != -1) {
+            //JOptionPane.showMessageDialog(this, "Player " + currentPlayer + " wins!");
+            highlightWinningCondition(winningCondition, bestMove[0], bestMove[1]);
+            statusLabel.setText("Player " + currentPlayer + " wins!");
+            gameActive = false; // winner, game over
+        } else if (isGridFull()) {
+            //JOptionPane.showMessageDialog(this, "It's a tie!");
+            statusLabel.setText("It's a tie!");
+            gameActive = false; // draw, game over
+        } else {
+            currentPlayer = 'X'; // switch players
+            statusLabel.setText("Current player: " +  currentPlayer);
+        }
+    }
+
+    /**
+     *  finds the best move for the com using Minimax
+     *
+     * @return int[] (row, col) of the best move
+     */
+    private int[] findBestMove() {
+        int bestScore = Integer.MIN_VALUE;
+        int[] bestMove = new int[]{-1, -1};
+
+        // eval all possible moves
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (gridButtons[i][j].getText().isEmpty()) { // check if spot is available
+                    gridButtons[i][j].setText("O"); // COM move
+                    int moveScore = minimax(0, false); // call minimax
+                    gridButtons[i][j].setText(""); // undo the move
+
+                    if (moveScore > bestScore) {
+                        bestScore = moveScore;
+                        bestMove = new int[]{i, j};
+                    }
+                }
+            }
+        }
+        return bestMove;
+    }
+
+    /**
+     * minimax algorithm to determine the best move
+     *
+     * @param depth int (depth of the recursion
+     * @param isMaximizingplayer boolean
+     * @return int (score of best move)
+     */
+    private int minimax(int depth, boolean isMaximizingplayer) {
+        int winningCondition = checkForWin(isMaximizingplayer ? 'O' : 'X');
+        if (winningCondition != -1) {
+            return isMaximizingplayer ? - 10 + depth : 10 - depth;
+        }
+        if (isGridFull()) {
+            return 0; // tie
+        }
+
+        if (isMaximizingplayer) {
+            int bestScore = Integer.MIN_VALUE;
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < columns; j++) {
+                    if (gridButtons[i][j].getText().isEmpty()) {
+                        gridButtons[i][j].setText("O");
+                        int score = minimax(depth + 1, false);
+                        gridButtons[i][j].setText(""); // undo move
+                        bestScore = Math.max(score, bestScore);
+                    }
+                }
+            }
+            return bestScore;
+        } else {
+            int bestScore = Integer.MAX_VALUE;
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < columns; j++) {
+                    if (gridButtons[i][j].getText().isEmpty()) {
+                        gridButtons[i][j].setText("X");
+                        int score = minimax(depth + 1, true);
+                        gridButtons[i][j].setText(""); // undo move
+                        bestScore = Math.min(score, bestScore);
+                    }
+                }
+            }
+            return bestScore;
+        }
+    }
+
+    /**
+     * highlights the corresponding line during a win
      *
      * @param condition int (number for type of winning condition)
      * @param row int
