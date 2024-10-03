@@ -67,7 +67,7 @@ public class TicTacToeCOMgame extends GameFramework {
      * Computer makes a move using the Minimax algorithm
      */
     private void computerMove() {
-        if (!gameActive) return; // only continue of the game is still active
+        if (!gameActive) return;  // only continue of the game is still active
 
         int[] bestMove = findBestMove();
         // check if the best move is valid in the first place
@@ -75,6 +75,7 @@ public class TicTacToeCOMgame extends GameFramework {
             gridButtons[bestMove[0]][bestMove[1]].setText(String.valueOf(currentPlayer));
         }
 
+        if (currentPlayer == 'O') return;
         int winningCondition = checkForWin(currentPlayer);
         if (winningCondition != -1) {
             //JOptionPane.showMessageDialog(this, "Player " + currentPlayer + " wins!");
@@ -86,7 +87,7 @@ public class TicTacToeCOMgame extends GameFramework {
             statusLabel.setText("It's a tie!");
             gameActive = false; // draw, game over
         } else {
-            currentPlayer = 'X'; // switch players
+            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X'; // switch players
             statusLabel.setText("Current player: " +  currentPlayer);
         }
     }
@@ -141,7 +142,7 @@ public class TicTacToeCOMgame extends GameFramework {
                     if (gridButtons[i][j].getText().isEmpty()) {
                         gridButtons[i][j].setText("O");
                         int score = minimax(depth + 1, false);
-                        gridButtons[i][j].setText(""); // undo move
+                        gridButtons[i][j].setText(" "); // undo move
                         bestScore = Math.max(score, bestScore);
                     }
                 }
@@ -154,7 +155,7 @@ public class TicTacToeCOMgame extends GameFramework {
                     if (gridButtons[i][j].getText().isEmpty()) {
                         gridButtons[i][j].setText("X");
                         int score = minimax(depth + 1, true);
-                        gridButtons[i][j].setText(""); // undo move
+                        gridButtons[i][j].setText(" "); // undo move
                         bestScore = Math.min(score, bestScore);
                     }
                 }
