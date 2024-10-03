@@ -63,33 +63,43 @@ public class TicTacToeCOMgame extends GameFramework {
         }
     }
 
+
+
     /**
      * Computer makes a move using the Minimax algorithm
      */
     private void computerMove() {
-        if (!gameActive) return;  // only continue of the game is still active
+        if (!gameActive) return; // only continue of the game is still active
 
-        int[] bestMove = findBestMove();
-        // check if the best move is valid in the first place
-        if (bestMove[0] != -1 && bestMove[1] != -1) {
+        // make it feel like the computer isn't actually instant to give a more natural feel
+        Timer timer = new Timer(1000, e -> {
+            int[] bestMove = findBestMove();
+            // check if the best move is valid in the first place
+            if (bestMove[0] == -1 && bestMove[1] == -1) {
+                statusLabel.setText("No valid moves for computer, game over.");
+                return;
+            }
+
             gridButtons[bestMove[0]][bestMove[1]].setText(String.valueOf(currentPlayer));
-        }
 
-        if (currentPlayer == 'O') return;
-        int winningCondition = checkForWin(currentPlayer);
-        if (winningCondition != -1) {
-            //JOptionPane.showMessageDialog(this, "Player " + currentPlayer + " wins!");
-            highlightWinningCondition(winningCondition, bestMove[0], bestMove[1]);
-            statusLabel.setText("Player " + currentPlayer + " wins!");
-            gameActive = false; // winner, game over
-        } else if (isGridFull()) {
-            //JOptionPane.showMessageDialog(this, "It's a tie!");
-            statusLabel.setText("It's a tie!");
-            gameActive = false; // draw, game over
-        } else {
-            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X'; // switch players
-            statusLabel.setText("Current player: " +  currentPlayer);
-        }
+
+            int winningCondition = checkForWin(currentPlayer);
+            if (winningCondition != -1) {
+                highlightWinningCondition(winningCondition, bestMove[0], bestMove[1]);
+                statusLabel.setText("Player " + currentPlayer + " wins!");
+                gameActive = false;
+            } else if (isGridFull()) {
+                statusLabel.setText("It's a tie!");
+                gameActive = false;
+            } else {
+                // Switch to human player
+                currentPlayer = 'X';
+                statusLabel.setText("Current player: " + currentPlayer);
+            }
+        });
+
+        timer.setRepeats(false);
+        timer.start();
     }
 
     /**
@@ -101,6 +111,9 @@ public class TicTacToeCOMgame extends GameFramework {
         int bestScore = Integer.MIN_VALUE;
         int[] bestMove = new int[]{-1, -1};
 
+        // list of preferred moves, edit as needed
+        int[][] preferredMoves = {{1,1},{0,0},{0,2},{2,0},{2,2}};
+
         // eval all possible moves
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -109,7 +122,7 @@ public class TicTacToeCOMgame extends GameFramework {
                     int moveScore = minimax(0, false); // call minimax
                     gridButtons[i][j].setText(""); // undo the move
 
-                    if (moveScore > bestScore) {
+                    if (moveScore > bestScore || (moveScore == bestScore && isPreferrdMove(i,j,preferredMoves))) {
                         bestScore = moveScore;
                         bestMove = new int[]{i, j};
                     }
@@ -117,6 +130,23 @@ public class TicTacToeCOMgame extends GameFramework {
             }
         }
         return bestMove;
+    }
+
+    /**
+     * method to check if move is in list of preferred moves
+     *
+     * @param row int row
+     * @param col int column
+     * @param preferredMoves list of preferred moves
+     * @return Boolean T if move is preferred
+     */
+    private boolean isPreferrdMove(int row, int col, int[][] preferredMoves) {
+        for (int[] move : preferredMoves) {
+            if (move[0] == row && move[1] == col) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -129,7 +159,7 @@ public class TicTacToeCOMgame extends GameFramework {
     private int minimax(int depth, boolean isMaximizingplayer) {
         int winningCondition = checkForWin(isMaximizingplayer ? 'O' : 'X');
         if (winningCondition != -1) {
-            return isMaximizingplayer ? - 10 + depth : 10 - depth;
+            return isMaximizingplayer ? 10 - depth : -10 + depth;
         }
         if (isGridFull()) {
             return 0; // tie
@@ -142,7 +172,7 @@ public class TicTacToeCOMgame extends GameFramework {
                     if (gridButtons[i][j].getText().isEmpty()) {
                         gridButtons[i][j].setText("O");
                         int score = minimax(depth + 1, false);
-                        gridButtons[i][j].setText(" "); // undo move
+                        gridButtons[i][j].setText(""); // undo move
                         bestScore = Math.max(score, bestScore);
                     }
                 }
@@ -155,7 +185,7 @@ public class TicTacToeCOMgame extends GameFramework {
                     if (gridButtons[i][j].getText().isEmpty()) {
                         gridButtons[i][j].setText("X");
                         int score = minimax(depth + 1, true);
-                        gridButtons[i][j].setText(" "); // undo move
+                        gridButtons[i][j].setText(""); // undo move
                         bestScore = Math.min(score, bestScore);
                     }
                 }
@@ -235,7 +265,7 @@ public class TicTacToeCOMgame extends GameFramework {
         }
         if (!gridButtons[0][2].getText().isEmpty() &&
                 !gridButtons[1][1].getText().isEmpty() &&
-                !gridButtons[2][2].getText().isEmpty() &&
+                !gridButtons[2][0].getText().isEmpty() &&
                 gridButtons[0][2].getText().charAt(0) == player &&
                 gridButtons[1][1].getText().charAt(0) == player &&
                 gridButtons[2][0].getText().charAt(0) == player) {
