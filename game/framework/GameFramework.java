@@ -83,6 +83,6 @@ public abstract class GameFramework extends JFrame {
                 gridButtons[i][j].setBackground(null);
             }
         }
-        statusLabel.setText("Current Player: X");
+        statusLabel.setText("Current player: X");
     }
 }

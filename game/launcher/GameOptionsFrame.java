@@ -1,11 +1,15 @@
 package game.launcher;
 
 import game.games.battleship.BattleshipGame;
+import game.games.pesten.PestenGUI;
+import game.games.pesten.Player;
 import game.games.tictactoe.TicTacToeCOMgame;
 import game.games.tictactoe.TicTacToeCvCGame;
 import game.games.tictactoe.TicTacToeGame;
+import game.games.pesten.Game;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 /**
  * Here the screen where a player gets to choose how to play the game gets rendered
@@ -64,6 +68,14 @@ public class GameOptionsFrame extends JFrame {
             new TicTacToeCvCGame(); // Start CvC TicTacToe game
         } else if (gameName.equals("Battleships") && mode.equals("Player vs Player")){
             new BattleshipGame(); // Start battleship player vs player
+        } else if (gameName.equals("Pesten") && mode.equals("Player vs Player")) {
+            ArrayList<Player> players = new ArrayList<>();
+            players.add(new Player("Player 1"));
+            players.add(new Player("Player 2"));
+            players.add(new Player("Player 3"));
+
+            PestenGUI GUI = new PestenGUI(14, players.size() + 1, players);
+            GUI.setVisible(true);
         }
 
         System.out.println("Starting " + gameName + " in " + mode + " mode.");

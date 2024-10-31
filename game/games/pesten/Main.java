@@ -1,3 +1,5 @@
+package game.games.pesten;
+
 import java.util.ArrayList;
 
 public class Main {
@@ -7,7 +9,7 @@ public class Main {
         players.add(new Player("Player 2"));
         players.add(new Player("Player 3"));
 
-        Game game = new Game(players);
-        game.playGame();
+        PestenGUI GUI = new PestenGUI(10, players.size() + 1, players);
+        GUI.setVisible(true);
     }
 }
