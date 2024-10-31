@@ -32,7 +32,7 @@ public class TicTacToeGame extends GameFramework {
     /**
      * set the current game name
      *
-     * @return String (game name)
+     * @return game name
      */
     @Override
     protected String getGameName() {
@@ -72,8 +72,8 @@ public class TicTacToeGame extends GameFramework {
      * hightlights the corresponding line during a win
      *
      * @param condition int (number for type of winning condition)
-     * @param row int
-     * @param col int
+     * @param row amount of rows
+     * @param col amount of columns
      */
     private void highlightWinningCondition(int condition, int row, int col) {
         if (condition == 0) { // row win

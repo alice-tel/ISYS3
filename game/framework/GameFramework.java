@@ -14,6 +14,8 @@ public abstract class GameFramework extends JFrame {
     protected JButton[][] gridButtonsPlayerTwo;
     protected int columns;
     protected int rows;
+    protected int width;
+    protected int height;
     protected JLabel statusLabel;
     private JTabbedPane tabbedPaneL;
 
@@ -47,6 +49,7 @@ public abstract class GameFramework extends JFrame {
 
         setTitle(getGameName());
         setLayout(new BorderLayout());
+        setSize(this.width, this.height);
         setSize(600, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -170,6 +173,8 @@ public abstract class GameFramework extends JFrame {
      * @param col int
      */
     protected abstract void onGridButtonClicked(int row, int col);
+
+//    protected abstract void setWindowSize(int width, int height);
 
     protected void resetGrid() {
         for (int i = 0; i < rows; i++) {

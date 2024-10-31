@@ -1,0 +1,188 @@
+Battleship Game Server - Protocol Documentatie 2023
+
+Auteurs: Lucas Bruins, Just Bodewes, Kars Hekman, Julian Kloosterhuis
+
+Zeeslag Regels:
+8x8 bord
+Boten mogen niet naast elkaar, er moet een leeg vakje tussen.
+Als een match begint moeten beide spelers hun boten plaatsen.
+Zodra alle boten geplaatst zijn begint het spel en word iemand de beurt gegeven.
+
+4 Schepen:
+(Lengte x Breedte)
+1x6
+1x4
+1x3
+1x2
+
+C = Client
+S = Server
+
+
+Commando's in detail
+
+C = Client
+S = Server
+
+Notes bij server antwoorden:
+Items tussen vierkante haken ('[' en ']') geven een lijst weer.
+Items tussen accolades ('{' en '}') geven een map weer. Zoals bij alle maps, is de volgorde niet bepaald.
+
+Notes bij client commando's:
+Alle commando's zijn niet hoofdlettergevoelig.
+Alle argumenten zijn niet hoofdlettergevoelig.
+
+De server kan naast een server-berichten sturen ook de connectie verbreken.
+
+Niet ondersteunde commando:
+C: <niet ondersteunde commando> | <commando> <verkeerd(e) argument(en)>
+S: ERR <reden>
+->Geen gevolg.
+
+Inloggen:
+C: login <speler>
+S: OK | ERR <reden>
+->Nu ingelogd met spelersnaam lowercase(<speler>). Een naam moet lowercase uniek zijn.
+  Als deze spelersnaam al bekend was, maar bijvoorbeeld vroegtijdig weg is gegaan bij een toernooi, dan wordt je weer opnieuw in het toernooi gezet.
+
+Uitloggen/Verbinding verbreken:
+C: logout | exit | quit | disconnect | bye
+S: -
+->Verbinding is verbroken. De speler blijft in het toernooi en kan weer meespelen als hij met de oude spelersnaam opnieuw inlogt.
+
+Lijst opvragen met ondersteunde spellen:
+C: get gamelist
+S: OK
+S: SVR GAMELIST ["<speltype>", ...]
+->Lijst met spellen ontvangen.
+
+Lijst opvragen met verbonden spelers:
+C: get playerlist
+S: OK
+S: SVR PLAYERLIST ["<speler>", ...]
+->Lijst met spelers ontvangen.
+
+Inschrijven voor de spelzoeker om (voor de lol) een potje met iemand te spelen.
+C: subscribe <speltype>
+S: OK
+->Ingeschreven voor speltype <speltype>. Zodra nog een speler zich heeft ingeschreven start een match hiermee.
+
+Match aangeboden krijgen, bericht naar beide spelers:
+S: SVR GAME MATCH {PLAYERTOMOVE: "<naam speler1>", GAMETYPE: "<speltype>", OPPONENT: "<naam tegenstander>"}
+->Nu bezig met een match, de inschrijving voor een speltype is vervallen.
+
+Boot Plaatsen:
+C: place <beginIndex> <eindIndex>
+S: OK | ERR <reden>
+->Hiermee wordt een boot geplaatst.
+Een error kan gegeven worden als de boot van deze lengte al is geplaatst of de indexen zijn ongeldig.
+
+De beurt toegewezen krijgen tijdens match:
+S: SVR GAME YOURTURN {TURNMESSAGE: "<bericht voor deze beurt>"}
+->Nu mogelijkheid een zet te doen.
+
+Een zet doen na het toegewezen krijgen van een beurt:
+C: move <zet>
+S: OK
+->De zet is geaccepteerd door de server, gevolg voor spel zal volgen.
+NB: <zet> is een integer van 0 t/m 63 (Zeeslag).
+De nummering van de vakjes op het bord is rij-gewijs, van linksboven naar rechtsonder.
+
+Resultaat van een zet naar beide spelers:
+S: SVR GAME MOVE {PLAYER: "<speler>", MOVE: "<zet>", RESULT: "<result>"}
+->Resultaat van de zet, De speler die de zet heeft gedaan. <result> kan de waarde 'PLONS' (miss) of 'BOEM' (hit) bevatten.
+
+Resultaat van een zet naar beide spelers als een boot is gezonken: (zelfde commando als hierboven maar extra parameter voor lengte)
+S: SVR GAME MOVE {PLAYER: "<speler>", MOVE: "<zet>", RESULT: "GEZONKEN", LENGTH: "<lengte>"}
+->Resultaat van de zet, De speler die de zet heeft gedaan. <result> is altijd "GEZONKEN" (sunk). <LENGTH> is de lengte van de boot die gezonken is. 
+
+Resultaat van een match ontvangen, bericht naar beide spelers:
+S: SVR GAME <speler resultaat> {PLAYERONESCORE: "<score speler1>", PLAYERTWOSCORE: "<score speler2>", COMMENT: "<commentaar op resultaat>"}
+->De match is afgelopen, <speler resultaat> kan de waarde 'WIN'of 'LOSS' bevatten.
+
+Een match opgeven:
+C: forfeit
+S: OK
+->De speler heeft het spel opgegeven, de server zal het resultaat van de match doorgeven.
+
+Resultaat van een match die opgegeven is door een speler, bericht naar beide spelers:
+S: SVR GAME <speler resultaat> {PLAYERONESCORE: "<score speler1>", PLAYERTWOSCORE: "<score speler2>", COMMENT: "Player forfeited match"}
+->De match is afgelopen, <speler> heeft de match opgegeven.
+
+Resultaat van een match, speler heeft de verbinding verbroken:
+S: SVR GAME <speler resultaat> {PLAYERONESCORE: "<score speler1>", PLAYERTWOSCORE: "<score speler2>", COMMENT: "Client disconnected"}
+->De match is afgelopen, <speler> heeft de verbinding verbroken.
+
+Een speler uitdagen voor een spel:
+C: challenge "<speler>" "<speltype>" | challenge <speler> <speltype>
+S: OK
+->De speler is nu uitgedaagd voor een spel. Eerder gemaakte uitdagingen zijn komen te vervallen. Gebruik quotes als er een spatie in een naam zit
+
+Een uitdaging ontvangen:
+S: SVR GAME CHALLENGE {CHALLENGER: "Sjors", GAMETYPE: "Guess Game", CHALLENGENUMBER: "1"}
+->Nu mogelijkheid de uitdaging te accepteren.
+
+Resultaat van een uitdaging die is komen te vervallen:
+S: SVR GAME CHALLENGE CANCELLED {CHALLENGENUMBER: "<uitdaging nummer>"}
+->De uitdaging is vervallen. Mogelijke oorzaken: speler heeft een andere uitdaging gestart, speler is een match begonnen, speler heeft de verbinding verbroken.
+
+Een uitdaging accepteren:
+C: challenge accept <uitdaging nummer>
+S: OK
+->De uitdaging is geaccepteerd. De match wordt gestart, bericht volgt.
+
+Chatten, alleen toegestaan als chat ingeschakeld is door de admin:
+C: message <bericht zonder spaties> | message "<bericht met spaties>"
+S: OK | ERR <reden>
+
+Help opvragen:
+C: help
+S: OK
+->De client heeft nu help informatie opgevraagd, de server zal antwoorden met help informatie.
+
+Help opvragen van een commando:
+C: help <commando>
+S: OK
+->De client heeft nu help informatie opgevraagd voor een commando, de server zal antwoorden met help informatie.
+
+Help informatie ontvangen:
+S: SVR HELP <help informatie>
+->Help informatie is ontvangen, kan meerdere achtereenvolgende responses bevatten.
+
+
+---------------------------------------------
+Overzicht van server-berichten:
+
+OK			Commando geaccepteerd
+ERR			Commando afgewezen
+SVR [ HELP | GAME [MATCH | YOURTURN | MOVE | CHALLENGE | [WIN | LOSS | DRAW]]]
+			Bericht van server
+    HELP		Bericht met help informatie
+	GAME		Bericht met betrekking op een spel/match
+	MATCH		Toewijzing van een match
+	YOURTURN	Toewijzing van de beurt tijdens de match
+	MOVE		Een zet gedaan tijdens de match
+	CHALLENGE	Bericht met betrekking op een uitdaging
+	WIN			Ontvanger heeft spel gewonnen
+	LOSS		Ontvanger heeft spel verloren
+	DRAW		Match is geeindigd in gelijk spel
+
+---------------------------------------------
+Overzicht van client-commando's:
+
+login				Aanmelden als speler
+logout | exit | quit | disconnect | bye
+					Uitloggen en verbinding verbreken
+get <gamelist | playerlist>
+					Opvragen van gegevens
+	gamelist		Opvragen van de lijst met ondersteunde speltypes
+	playerlist		Opvragen van de lijst met aangemelde spelers
+subscribe			Inschrijven voor een speltype
+move				Een zet doen tijdens een match
+place				Plaats een boot
+challenge [accept]	Uitdagingen behandelen
+	accept			Uitdaging accepteren
+forfeit				De huidige match opgeven
+message             Stuur een berichtje
+help [commando]		Help weergeven
+
