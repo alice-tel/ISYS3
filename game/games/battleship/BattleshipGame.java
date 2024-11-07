@@ -523,6 +523,9 @@ public class BattleshipGame extends GameFramework {
                 statusLabel.setText(currentPlayer + " won!");
                 resetGame();
             }
+            if(opponentDefendGrid[row+1][col]!= 'S' && opponentDefendGrid[row-1][col]!= 'S' && opponentDefendGrid[row][col+1]!= 'S' && opponentDefendGrid[row][col-1]!= 'S'){
+                statusLabel.setText(currentPlayer + " sunk a ship!");
+            }
         } 
         else {
             currentPlayerAttackGrid[row][col] = 'X';  // Mark as miss on current player's attack grid

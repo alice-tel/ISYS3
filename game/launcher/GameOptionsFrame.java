@@ -1,25 +1,19 @@
 package game.launcher;
 
 import game.games.battleship.BattleshipGame;
-import game.games.pesten.PestenGUI;
-import game.games.pesten.Player;
-import game.games.tictactoe.TicTacToeCOMgame;
+import game.games.battleship.BattleshipsCOMGame;
+import game.games.tictactoe.TicTacToeCOMGame;
 import game.games.tictactoe.TicTacToeCvCGame;
 import game.games.tictactoe.TicTacToeGame;
-import game.games.pesten.Game;
+import game.games.tictactoe.TicTacToeClient;
+
 
 import javax.swing.*;
-import java.util.ArrayList;
 
-/**
- * Here the screen where a player gets to choose how to play the game gets rendered
- * action event listeners are present on the types of modes the player gets to choose from
- * the startGame method loads the corresponding game class
- */
 public class GameOptionsFrame extends JFrame {
     public GameOptionsFrame(String gameName) {
         setTitle("Game Options - " + gameName);
-        setSize(400,400);
+        setSize(400, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -27,6 +21,7 @@ public class GameOptionsFrame extends JFrame {
         JButton playerVsPlayerButton = new JButton("Player Vs Player");
         JButton playerVsComputerButton = new JButton("Player Vs Computer");
         JButton computerVsComputerButton = new JButton("Computer Vs Computer");
+        JButton tournamentButton = new JButton("Tournament");
 
         playerVsPlayerButton.addActionListener(e -> {
             startGame(gameName, "Player vs Player");
@@ -45,37 +40,48 @@ public class GameOptionsFrame extends JFrame {
             dispose();
         });
 
+        tournamentButton.addActionListener(e -> {
+            startTournamentGame();
+            dispose();
+        });
+
         panel.add(playerVsPlayerButton);
         panel.add(playerVsComputerButton);
         panel.add(computerVsComputerButton);
+        panel.add(tournamentButton);
         add(panel);
         setVisible(true);
     }
 
-    /**
-     * check the game name to start corresponding game
-     * @TODO currently checks the string directly, maybe change this later?
-     *
-     * @param gameName String (name of selected game)
-     * @param mode String (selected game more (pve, pvp, eve))
-     */
+    private void startTournamentGame() {
+        // Prompt for player name in a pop-up dialog
+        String playerName = JOptionPane.showInputDialog(this, "Enter your player name (alphanumeric, max 16 characters, can't start with a number):");
+
+        if (playerName != null && isValidName(playerName)) {
+            // Start the TicTacToeClient with the valid player name
+            TicTacToeClient client = new TicTacToeClient(playerName);
+            new Thread(client).start(); // Start the client in a new thread
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid name! Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private boolean isValidName(String name) {
+        // Check name constraints: alphanumeric, not starting with a number, max 16 characters
+        return name != null && name.matches("^[a-zA-Z][a-zA-Z0-9]{0,15}$");
+    }
+
     private void startGame(String gameName, String mode) {
         if (gameName.equals("Tic-Tac-Toe") && mode.equals("Player vs Player")) {
             new TicTacToeGame(); // Start PvP Tic Tac Toe game
         } else if (gameName.equals("Tic-Tac-Toe") && mode.equals("Player vs Computer")) {
-            new TicTacToeCOMgame(); // Start PvC TicTacToe game
+            new TicTacToeCOMGame(); // Start PvC TicTacToe game
         } else if (gameName.equals("Tic-Tac-Toe") && mode.equals("Computer vs Computer")) {
             new TicTacToeCvCGame(); // Start CvC TicTacToe game
-        } else if (gameName.equals("Battleships") && mode.equals("Player vs Player")){
-            new BattleshipGame(); // Start battleship player vs player
-        } else if (gameName.equals("Pesten") && mode.equals("Player vs Player")) {
-            ArrayList<Player> players = new ArrayList<>();
-            players.add(new Player("Player 1"));
-            players.add(new Player("Player 2"));
-            players.add(new Player("Player 3"));
-
-            PestenGUI GUI = new PestenGUI(14, players.size() + 1, players);
-            GUI.setVisible(true);
+        } else if (gameName.equals("Battleships") && mode.equals("Player vs Player")) {
+            new BattleshipGame(); // Start Battleship player vs player
+        } else if (gameName.equals("Battleships") && mode.equals("Player vs Computer")) {
+            new BattleshipsCOMGame(); // Start Battleship player vs computer
         }
 
         System.out.println("Starting " + gameName + " in " + mode + " mode.");
