@@ -1,6 +1,7 @@
 package game.launcher;
 
 import game.games.battleship.BattleshipGame;
+import game.games.battleship.BattleshipsCOMGame;
 import game.games.tictactoe.TicTacToeCOMgame;
 import game.games.tictactoe.TicTacToeCvCGame;
 import game.games.tictactoe.TicTacToeGame;
@@ -78,6 +79,8 @@ public class GameOptionsFrame extends JFrame {
             new TicTacToeCvCGame(); // Start CvC TicTacToe game
         } else if (gameName.equals("Battleships") && mode.equals("Player vs Player")) {
             new BattleshipGame(); // Start Battleship player vs player
+        } else if (gameName.equals("Battleships") && mode.equals("Player vs Computer")) {
+            new BattleshipsCOMGame(); // Start Battleship player vs computer
         }
 
         System.out.println("Starting " + gameName + " in " + mode + " mode.");
