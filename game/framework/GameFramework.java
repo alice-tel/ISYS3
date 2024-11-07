@@ -64,6 +64,7 @@ public abstract class GameFramework extends JFrame {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 gridButtons[i][j] = new JButton("");
+                gridButtons[i][j].setOpaque(true);
                 gridButtons[i][j].setFont(new Font("Arial", Font.PLAIN, 60));
                 int finalI = i;
                 int finalJ = j;
@@ -93,6 +94,7 @@ public abstract class GameFramework extends JFrame {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 gridButtons[i][j] = new JButton("");
+                gridButtons[i][j].setOpaque(true);
                 gridButtons[i][j].setFont(new Font("Arial", Font.PLAIN, 60));
                 int finalI = i;
                 int finalJ = j;
@@ -104,6 +106,7 @@ public abstract class GameFramework extends JFrame {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 gridButtonsPlayerTwo[i][j] = new JButton("");
+                gridButtonsPlayerTwo[i][j].setOpaque(true);
                 gridButtonsPlayerTwo[i][j].setFont(new Font("Arial", Font.PLAIN, 60));
                 int finalI = i;
                 int finalJ = j;
