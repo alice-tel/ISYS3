@@ -4,7 +4,7 @@ import game.framework.GameFramework;
 import javax.swing.*;
 import java.awt.*;
 
-public class TicTacToeCOMgame extends GameFramework {
+public class TicTacToeCOMGame extends GameFramework {
     private char currentPlayer;
     private boolean gameActive;
 
@@ -13,7 +13,7 @@ public class TicTacToeCOMgame extends GameFramework {
      * initializes a 3x3 grid
      * base starting player set to X
      */
-    public TicTacToeCOMgame() {
+    public TicTacToeCOMGame() {
         super(3,3); // generate a 3x3 grid from the parent framework
         currentPlayer = 'X'; // X as the starting player
         gameActive = true; // if this point is reached, the game should be active
