@@ -2,7 +2,6 @@ package game.framework;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.stream.Gatherer.Integrator.Greedy;
 
 /**
  * renders a base grid by using extend
