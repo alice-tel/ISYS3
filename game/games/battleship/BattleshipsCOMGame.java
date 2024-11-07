@@ -438,11 +438,11 @@ public class BattleshipsCOMGame extends GameFramework {
         char[][] currentPlayerAttackGrid = currentPlayer.equals("player1") ? player1AttackGrid : player2AttackGrid;
 
 
-//        // Check if this cell has already been attacked
-//        if (currentPlayerAttackGrid[row][col] == 'H' || currentPlayerAttackGrid[row][col] == 'X') {
-//            JOptionPane.showMessageDialog(this, "You've already shot here!", "Invalid Move", JOptionPane.INFORMATION_MESSAGE);
-//            return false;
-//        }
+        // Check if this cell has already been attacked
+        if (currentPlayerAttackGrid[row][col] == 'H' || currentPlayerAttackGrid[row][col] == 'X') {
+            JOptionPane.showMessageDialog(this, "You've already shot here!", "Invalid Move", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
 
         // Check if the shot hits a ship
         if (opponentDefendGrid[row][col] == 'S') {
