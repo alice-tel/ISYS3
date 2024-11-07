@@ -1,6 +1,8 @@
 package game.games.battleship;
 
 import game.framework.GameFramework;
+import game.games.pesten.PestenGUI;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -10,6 +12,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
+import javax.swing.Timer;
 
 public class BattleshipsCOMGame extends GameFramework {
     private static final int GRID_ROWS = 8;
@@ -125,7 +128,7 @@ public class BattleshipsCOMGame extends GameFramework {
     private void updateBoardUI() {
         for (int row = 0; row < GRID_ROWS; row++) {
             for (int col = 0; col < GRID_COLS; col++) {
-                if (currentPlayer.equals("player1")) {
+//                if (currentPlayer.equals("player1")) {
                     if (currentPlayerDefendGrid[row][col] == 'S') {
                         gridButtons[row][col].setBackground(Color.GRAY);
                     }
@@ -147,29 +150,29 @@ public class BattleshipsCOMGame extends GameFramework {
                     if (currentPlayerAttackGrid[row][col] == 'X') {
                         gridButtonsPlayerTwo[row][col].setBackground(Color.BLACK);
                     }
-                } else {
-                    if (currentPlayerDefendGrid[row][col] == 'S') {
-                        gridButtonsPlayerTwo[row][col].setBackground(Color.GRAY);
-                    }
-                    if (currentPlayerDefendGrid[row][col] == 'X') {
-                        gridButtonsPlayerTwo[row][col].setBackground(Color.BLACK);
-                    }
-                    if (currentPlayerDefendGrid[row][col] == 'H') {
-                        gridButtonsPlayerTwo[row][col].setBackground(Color.RED);
-                    }
-                    if (currentPlayerDefendGrid[row][col] == '-') {
-                        gridButtonsPlayerTwo[row][col].setBackground(Color.BLUE);
-                    }
-                    if (currentPlayerAttackGrid[row][col] == '-') {
-                        gridButtons[row][col].setBackground(Color.BLUE);
-                    }
-                    if (currentPlayerAttackGrid[row][col] == 'H') {
-                        gridButtons[row][col].setBackground(Color.RED);
-                    }
-                    if (currentPlayerAttackGrid[row][col] == 'X') {
-                        gridButtons[row][col].setBackground(Color.BLACK);
-                    }
-                }
+//                } else {
+//                    if (currentPlayerDefendGrid[row][col] == 'S') {
+//                        gridButtonsPlayerTwo[row][col].setBackground(Color.GRAY);
+//                    }
+//                    if (currentPlayerDefendGrid[row][col] == 'X') {
+//                        gridButtonsPlayerTwo[row][col].setBackground(Color.BLACK);
+//                    }
+//                    if (currentPlayerDefendGrid[row][col] == 'H') {
+//                        gridButtonsPlayerTwo[row][col].setBackground(Color.RED);
+//                    }
+//                    if (currentPlayerDefendGrid[row][col] == '-') {
+//                        gridButtonsPlayerTwo[row][col].setBackground(Color.BLUE);
+//                    }
+//                    if (currentPlayerAttackGrid[row][col] == '-') {
+//                        gridButtons[row][col].setBackground(Color.BLUE);
+//                    }
+//                    if (currentPlayerAttackGrid[row][col] == 'H') {
+//                        gridButtons[row][col].setBackground(Color.RED);
+//                    }
+//                    if (currentPlayerAttackGrid[row][col] == 'X') {
+//                        gridButtons[row][col].setBackground(Color.BLACK);
+//                    }
+//                }
 
             }
         }
@@ -435,11 +438,11 @@ public class BattleshipsCOMGame extends GameFramework {
         char[][] currentPlayerAttackGrid = currentPlayer.equals("player1") ? player1AttackGrid : player2AttackGrid;
 
 
-        // Check if this cell has already been attacked
-        if (currentPlayerAttackGrid[row][col] != '-') {
-            JOptionPane.showMessageDialog(this, "You've already shot here!", "Invalid Move", JOptionPane.INFORMATION_MESSAGE);
-            return false;
-        }
+//        // Check if this cell has already been attacked
+//        if (currentPlayerAttackGrid[row][col] == 'H' || currentPlayerAttackGrid[row][col] == 'X') {
+//            JOptionPane.showMessageDialog(this, "You've already shot here!", "Invalid Move", JOptionPane.INFORMATION_MESSAGE);
+//            return false;
+//        }
 
         // Check if the shot hits a ship
         if (opponentDefendGrid[row][col] == 'S') {
@@ -447,29 +450,30 @@ public class BattleshipsCOMGame extends GameFramework {
             currentPlayerAttackGrid[row][col] = 'H';  // Mark as hit on current player's attack grid
             updateBoardUI();
             statusLabel.setText(currentPlayer + " hit! you can go again");
+
             if (checkWinCondition(opponentDefendGrid)) {  // Check if game is won
                 isShootingPhase = false;
                 displayWinningMessage();
                 statusLabel.setText(currentPlayer + " won!");
                 resetGame();
             }
+
+            // If the shot was a hit, we don't change the turn (continue same player)
+            return true;
+
         } else {
             currentPlayerAttackGrid[row][col] = 'X';  // Mark as miss on current player's attack grid
             opponentDefendGrid[row][col] = 'X';
             statusLabel.setText(currentPlayer + " missed! other players turn");
-            currentPlayer = "computerAi";
-            computerMove();
-//            if (currentPlayer.equals("speler1")) {
-//                currentPlayer = "computerAi";
-//                System.out.println("HELOOOOOOOOOOOOO ERVOOR");
-//                computerMove(); //we moeten dan wel ervoor zorgen dat aan het begin van aishoot, currentplayer ai wordt, en zodra ai mist currentplayer weer speler1 wordt.
-//                System.out.println("HALOOOOOOOOOOOOOOOOOOO");
-//            }else{
-//                switchPlayer();
+
+            // After a  miss, switch to the opponent
+            currentPlayer = currentPlayer.equals("player1") ? "computerAi" : "player1";
+            if (currentPlayer.equals("computerAi")) {
+                computerMove();
+            }
+            updateBoardUI();
+            return false;
         }
-        updateBoardUI();
-        updateBoardUI();
-        return true;
     }
 
 
@@ -590,169 +594,96 @@ public class BattleshipsCOMGame extends GameFramework {
     /**
      * Makes the computers' move by using the Minimax function
      */
-    private void computerMove() { //problem, ai attacks the same board as
-        int[] bestMove = minimaxDecision();
-        int row = bestMove[0];
-        int col = bestMove[1];
-
-        boolean shotResult = handleShot(row, col);
-
-        if (shotResult) {
-            if (player1DefendGrid[row][col] == 'H') {
-                computerMove();
-            } else {
-                currentPlayer = "player1";
-               handleShot(row, col);
-            }
-        } else {
-            currentPlayer = "player1";
+    private void computerMove() {
+        // Check if we're in the shootingphase. if not, return early
+        if (!isShootingPhase) {
+            return;
         }
+
+        // Set up a timer for a delay
+        Timer timer = new Timer(1000, null);
+
+        timer.addActionListener(e -> {
+            if (!isShootingPhase) {
+                timer.stop();
+                return;
+            }
+                int[] bestMove = minimaxDecision();
+                int row = bestMove[0];
+                int col = bestMove[1];
+
+                // Perform the shot and determine if it was a hit or a miss
+                boolean hit = handleShot(row, col);
+
+                if (!hit) {
+                    currentPlayer = "player1";
+                    timer.stop();
+                } else {
+                    updateBoardUI();
+                }
+        });
+        timer.setRepeats(true);
+        timer.start();
     }
-        /**
-         * Uses simplified Minimax to determine the best move
-         *
-         * @return The row and column of the best move
-         */
-        private int[] minimaxDecision () {
-            int bestScore = Integer.MIN_VALUE;
-            int[] bestMove = new int[2];
 
-            // Iterate over the entire grid to find the move with the highest score
-            for (int row = 0; row < GRID_ROWS; row++) {
-                for (int col = 0; col < GRID_COLS; col++) {
-                    // Skip if cell was already targeted
-                    if (player1DefendGrid[row][col] != '-') {
-                        continue;
-                    }
+    private int[] minimaxDecision() {
+        int bestScore = Integer.MIN_VALUE;
+        int[] bestMove = new int[2];
+        boolean foundHitAdjacent = false;
 
-                    // Hypothetical evaluation based on attack grid status
+        for (int row = 0; row < GRID_ROWS; row++) {
+            for (int col = 0; col < GRID_COLS; col++) {
+                // Only consider untargeted cells
+                if (player1DefendGrid[row][col] == 'H' || player1DefendGrid[row][col] == 'X') { // Only target cells with ships as test
+                    continue; // Skip cells that have been targeted or missed
+                }
+
+                if (isAdjacentHit(row, col)) {
+                    // Evaluate move based on non-all-knowing logic
                     int score = evaluateMove(row, col);
-
-                    // Update best score and move if current score is higher
                     if (score > bestScore) {
                         bestScore = score;
                         bestMove[0] = row;
                         bestMove[1] = col;
+                        foundHitAdjacent = true;
                     }
-                } //sluit 1e if statement
-            } //sluit forloop2
-            return bestMove;
-        }//sluit forloop1
-
-        /**
-         *
-         * @param row The row of tHe hypothetical move
-         * @param col The column of the hypothetical move
-         * @return The score for the hypothetical move
-         */
-        private int evaluateMove ( int row, int col) {
-            int score = 0;
-
-            if (player1DefendGrid[row][col] == 'S') {
-                score += 10; // Hit ship
-            }
-             if (player1AttackGrid[row][col] == 'H') {
-                score += 5;
-            } else if (player1AttackGrid[row][col] == 'X') {
-                score -= 5;
-            }
-            return score;
-        }}
-
-
-    /*
-    CHAT GPT AI CODE (als comment zodat het niet kwijt gaat :) )
-
-
-    private void computerMove() {
-        int[] bestMove = minimaxDecision();
-        handleShot(bestMove[0], bestMove[1]);
-    }
-    --------------------------------------------------------
-    private int[] minimaxDecision() {
-        int bestScore = Integer.MIN_VALUE;
-        int[] bestMove = new int[2];
-
-        // Iterate over the entire grid to find the move with the highest score
-        for (int row = 0; row < GRID_ROWS; row++) {
-            for (int col = 0; col < GRID_COLS; col++) {
-                // Skip if the cell was already targeted
-                if (computerAttackGrid[row][col] != '-') continue;
-
-                // Make a hypothetical move
-                int score = evaluateMove(row, col);
-
-                // Update the best score and move if the current score is higher
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove[0] = row;
-                    bestMove[1] = col;
                 }
             }
         }
+
+        // If no adjacent cells to hits are found, pick a random untargeted cell
+        if (!foundHitAdjacent) {
+            do {
+                bestMove[0] = (int) (Math.random() * GRID_ROWS);
+                bestMove[1] = (int) (Math.random() * GRID_COLS);
+            } while (player1DefendGrid[bestMove[0]][bestMove[1]] == 'H' || player1DefendGrid[bestMove[0]][bestMove[1]] == 'X');
+        }
         return bestMove;
     }
-    --------------------------------------------
+
     private int evaluateMove(int row, int col) {
         int score = 0;
 
-        // Check adjacent cells for hits to improve targeting
-        int[][] directions = { {1, 0}, {-1, 0}, {0, 1}, {0, -1} };  // Down, Up, Right, Left
-
-        for (int[] dir : directions) {
-            int newRow = row + dir[0];
-            int newCol = col + dir[1];
-
-            if (isWithinBounds(newRow, newCol) && currentPlayerAttackGrid[newRow][newCol] == 'H') {
-                score += 10;  // Prefer moves near hits
-            }
+        // Increase score if adjacent cells show potential hits
+        if (isAdjacentHit(row, col)) {
+            score += 10;
+        } else {
+            score += (Math.random() > 0.7) ? 3 : 0; // Random low-priority scoring
         }
 
         return score;
     }
-    -----------------------------------------------
-    private boolean handleShot(int row, int col) {
-        boolean validMove = super.handleShot(row, col);
 
-        if (!validMove) return false;
-
-        // If it's the player's turn and they miss, the computer should play
-        if (currentPlayer.equals("player1") && currentPlayerAttackGrid[row][col] == 'X') {
-            currentPlayer = "computer";
-            computerMove();
-        } else {
-            currentPlayer = "player1";
-        }
-
-        return true;
+    private boolean isAdjacentHit(int row, int col) {
+        return (isHit(row - 1, col) || isHit(row + 1, col) ||
+                isHit(row, col - 1) || isHit(row, col + 1));
     }
-    -----------------------------------------------
-    @Override
-    protected void initializeGame() {
-        super.initializeGame();
 
-        // Automatically place ships for the computer player
-        autoPlaceComputerShips();
-
-        // Set the current player to player1 (human)
-        currentPlayer = "player1";
+    private boolean isHit(int row, int col) {
+        // Ensure within bounds and check if cell was previously a hit
+        return row >= 0 && row < GRID_ROWS && col >= 0 && col < GRID_COLS && player1DefendGrid[row][col] == 'H';
     }
-    --------------------------------------------------
-    private void autoPlaceComputerShips() {
-        for (String shipName : shipNames) {
-            boolean placed = false;
+}
 
-            while (!placed) {
-                int row = (int) (Math.random() * GRID_ROWS);
-                int col = (int) (Math.random() * GRID_COLS);
-                boolean horizontal = Math.random() > 0.5;
-
-                if (canPlaceShip(row, col, getShipSize(shipName), horizontal)) {
-                    placeShip(row, col, getShipSize(shipName), horizontal, computerDefendGrid);
-                    placed = true;
-                }
-            }
-        }
-    }
-     */
+// NOTE TO SELF!!!! IF I MISS "ALREADY SHOT HERE" FIX THAT GURL
 
