@@ -11,7 +11,8 @@ import java.util.Set;
 
 public class BattleshipsClient implements Runnable {
 
-    private String hostName = "127.0.0.1";
+//    private String hostName = "127.0.0.1"; // Local server
+     private String hostName = "172.201.112.199"; // Tournament server
     private int portNumber = 7789;
     private Socket client;
     private BufferedReader in;
@@ -99,7 +100,7 @@ public class BattleshipsClient implements Runnable {
             handleSinkMessage(message);  // Handle ship sink message
         } else if (message.startsWith("SVR GAME WIN") || message.startsWith("SVR GAME LOSS") || message.startsWith("SVR GAME DRAW")) {
             System.out.println("Game Over: " + message);  // Game result
-            shutdown();
+            //shutdown();
         } else if (message.startsWith("OK")) {
             // Command accepted
         } else if (message.startsWith("ERR")) {
@@ -271,7 +272,7 @@ public class BattleshipsClient implements Runnable {
     }
 
     private boolean isHit(int index) {
-        return shipPositions.contains(index); // Returns true if the position is a hit
+        return false; // Returns true if the position is a hit
     }
 
     private void handleMoveResult(String message) {
@@ -307,7 +308,7 @@ public class BattleshipsClient implements Runnable {
             placeShips();
         } else {
             System.out.println("Unrecoverable error. Disconnecting...");
-            shutdown();
+            //shutdown();
         }
     }
 

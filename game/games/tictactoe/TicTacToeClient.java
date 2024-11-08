@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Random;
 
 public class TicTacToeClient implements Runnable {
 
-    private String hostName = "127.0.0.1";
+//    private String hostName = "127.0.0.1"; // Local server
+    private String hostName = "172.201.112.199"; // Tournament server
     private int portNumber = 7789;
     private Socket client;
     private BufferedReader in;
@@ -101,11 +101,11 @@ public class TicTacToeClient implements Runnable {
         } else if (message.startsWith("SVR GAME LOSS")) {
             System.out.println("You lost the game!");
             printBoard();
-            shutdown();
+            //shutdown();
         } else if (message.startsWith("SVR GAME DRAW")) {
             System.out.println("The game is a draw!");
             printBoard();
-            shutdown();
+            //shutdown();
         } else if (message.startsWith("SVR GAME MOVE")) {
             try {
                 // Extract the move using regex
