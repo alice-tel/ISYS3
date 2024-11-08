@@ -74,6 +74,7 @@ public class BattleshipsClient implements Runnable {
             String message;
             while ((message = in.readLine()) != null) {
                 if (done) break;
+                System.out.println(message);
                 handleServerMessage(message);
             }
 
