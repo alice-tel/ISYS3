@@ -79,8 +79,16 @@ public class BattleshipsClient implements Runnable {
 
         } catch (IOException e) {
             e.printStackTrace();
-            shutdown();
+            //shutdown();
         }
+    }
+
+    private void resetGameState() {
+        occupied = new boolean[64];
+        shotsFired = new boolean[64];
+        placedShipLengths.clear();
+        shipPositions.clear();
+        isYourTurn = false;
     }
 
     private void handleServerMessage(String message) throws IOException {
@@ -100,6 +108,8 @@ public class BattleshipsClient implements Runnable {
             handleSinkMessage(message);  // Handle ship sink message
         } else if (message.startsWith("SVR GAME WIN") || message.startsWith("SVR GAME LOSS") || message.startsWith("SVR GAME DRAW")) {
             System.out.println("Game Over: " + message);  // Game result
+            resetGameState();
+            out.println("subscribe battleship");
             //shutdown();
         } else if (message.startsWith("OK")) {
             // Command accepted
@@ -308,6 +318,7 @@ public class BattleshipsClient implements Runnable {
             placeShips();
         } else {
             System.out.println("Unrecoverable error. Disconnecting...");
+//            out.println("subscribe battleship");
             //shutdown();
         }
     }
