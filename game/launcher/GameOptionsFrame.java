@@ -2,13 +2,15 @@ package game.launcher;
 
 import game.games.battleship.BattleshipGame;
 import game.games.battleship.BattleshipsCOMGame;
+import game.games.pesten.Player;
 import game.games.tictactoe.TicTacToeCOMGame;
 import game.games.tictactoe.TicTacToeCvCGame;
 import game.games.tictactoe.TicTacToeGame;
 import game.games.tictactoe.TicTacToeClient;
-
+import game.games.pesten.PestenGUI;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 public class GameOptionsFrame extends JFrame {
     public GameOptionsFrame(String gameName) {
@@ -82,6 +84,14 @@ public class GameOptionsFrame extends JFrame {
             new BattleshipGame(); // Start Battleship player vs player
         } else if (gameName.equals("Battleships") && mode.equals("Player vs Computer")) {
             new BattleshipsCOMGame(); // Start Battleship player vs computer
+        } else if (gameName.equals("Pesten") && mode.equals("Player vs Player")) {
+            ArrayList<Player> players = new ArrayList<>();
+            players.add(new Player("Player 1"));
+            players.add(new Player("Player 2"));
+            players.add(new Player("Player 3"));
+
+            PestenGUI GUI = new PestenGUI(10, players.size() + 1, players);
+            GUI.setVisible(true);
         }
 
         System.out.println("Starting " + gameName + " in " + mode + " mode.");
