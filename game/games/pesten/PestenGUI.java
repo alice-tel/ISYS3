@@ -14,7 +14,7 @@ public class PestenGUI extends GameFramework {
     private JLabel topCardLabel;
 
     public PestenGUI(int columns, int rows, ArrayList<Player> players) {
-        super(columns, rows - 1);
+        super(columns, rows - 1,1800,650,"");
         this.players = players;
         game = new Game(players);
         currentPlayer = 0;
@@ -31,7 +31,7 @@ public class PestenGUI extends GameFramework {
         // Initialize players with hands and draw the starting card
         game.startGame();
         topCard = game.getTopCard();
-        setSize(2000,650);
+        
 
         // Initialize the top card label and add it to the GUI
         if (topCardLabel == null) {

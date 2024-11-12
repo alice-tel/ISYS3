@@ -1,6 +1,8 @@
 package game.games.battleship;
 
 import game.framework.GameFramework;
+import game.games.battleship.Battleship_rules;
+import javax.print.DocFlavor.STRING;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -26,6 +28,8 @@ public class BattleshipGame extends GameFramework {
     private char[][] player2DefendGrid; // Defend grid for player 2
     private char[][] player1AttackGrid; // Attack grid for player 1
     private char[][] player2AttackGrid; // Attack grid for player 2
+    private String player_1 = "player1";
+    private String player_2 = "player2";
     private int count;
     private Socket socket;
     private PrintWriter out;
@@ -38,12 +42,14 @@ public class BattleshipGame extends GameFramework {
     private boolean isHorizontal = true;  // Default ship placement orientation
     private JButton readyButton; // Ready-knop
     char[][] targetDefendGrid = currentPlayer.equals("player1") ? player2DefendGrid : player1DefendGrid;
+
     /**
      * Constructor
      * Initializes an 8x8 grid for the game and sets up the ship panel at the bottom.
      */
     public BattleshipGame() {
-        super(GRID_COLS, GRID_ROWS);
+        super(GRID_COLS, GRID_ROWS, 1500, 800, Battleship_rules.getRules());
+    
         statusLabel.setText("Current player: " + currentPlayer);
 
         // Initialize the defense and attack grids for both players
@@ -58,6 +64,7 @@ public class BattleshipGame extends GameFramework {
         updateCurrentPlayerGrids();
 
         initializeShipPanel();
+        
 
         setVisible(true);
         updateBoardUI();
@@ -65,71 +72,13 @@ public class BattleshipGame extends GameFramework {
         // connectToServer();
     }
 
-    private void InfoTab() {
-
-        JTabbedPane tabbedPane = new JTabbedPane();
-    
-        // Add the rules tab
-        JPanel rulesPanel = new JPanel(new BorderLayout());
-    
-        JTextArea rulesText = new JTextArea();
-        rulesText.setText(
-            "Spelregels Battleship\n\n" +
-        "Setup-fase:\n" +
-        "• Spelbord: 8x8 grid voor elke speler.\n" +
-        "• Schepen: Elke speler plaatst vier schepen op het bord:\n" +
-        "   - 1x Lengte 6\n" +
-        "   - 1x Lengte 4\n" +
-        "   - 1x Lengte 3\n" +
-        "   - 1x Lengte 2\n" +
-        "• Plaatsingsregels:\n" +
-        "   - Schepen mogen elkaar niet raken, maar mogen wel tegen de rand.\n" +
-        "   - Schepen kunnen horizontaal of verticaal worden geplaatst.\n" +
-        "   - Klik met de rechter muisknop op 1 van de schepen om de schepen te roteren.\n" +
-        "• Klaar-knop: Zodra alle schepen geplaatst zijn, druk je op de 'Klaar'-knop om verder te gaan.\n\n" +
-        
-        "Spelfase:\n" +
-        "• Doel: Om beurten aanvallen uitvoeren en proberen de schepen van de tegenstander tot zinken te brengen.\n" +
-        "• Aanvallen:\n" +
-        "   - Klik op een vakje van het tegenstanderbord om aan te vallen.\n" +
-        "   - Rood betekent dat je een schip hebt geraakt ('Hit').\n" +
-        "   - Zwart betekent een misser ('Miss').\n" +
-        "• Beurtwisseling:\n" +
-        "   - Als je raakt, mag je nog een keer aanvallen.\n" +
-        "   - Als je mist, is de andere speler aan de beurt.\n\n" +
-        
-        "Winconditie:\n" +
-        "• Het spel eindigt zodra alle delen van de schepen van een speler zijn geraakt.\n" +
-        "• De speler die als laatste nog overgebleven schepen heeft, wint het spel.\n\n" +
-        
-        "Spelvoorwaarden:\n" +
-        "• Beide spelers moeten eerst al hun schepen correct hebben geplaatst.\n" +
-        "• Het spel kan op elk moment worden gereset als beide spelers daarmee instemmen.\n"
-        );
-        rulesText.setEditable(false);
-        rulesText.setLineWrap(true);
-        rulesText.setWrapStyleWord(true);
-    
-        // Add the JTextArea with scroll pane to the rules panel
-        JScrollPane scrollPane = new JScrollPane(rulesText);
-        rulesPanel.add(scrollPane, BorderLayout.CENTER);
-    
-        // Add the rules tab to the tabbed pane
-        tabbedPane.addTab("Spelregels", rulesPanel);
-    
-        // Add the tabbed pane to the frame
-        add(tabbedPane, BorderLayout.CENTER);
-    }
-    
-    
-
 
 
     /**
      * Update the grid references to point to the current player's grids.
      */
     private void updateCurrentPlayerGrids() {
-        if (currentPlayer.equals("player1")) {
+        if (currentPlayer.equals(player_1)) {
             currentPlayerDefendGrid = player1DefendGrid;
             currentPlayerAttackGrid = player1AttackGrid;
         } else {
@@ -142,17 +91,17 @@ public class BattleshipGame extends GameFramework {
      * Switch between players.
      */
     private void switchPlayer() {
-        currentPlayer = currentPlayer.equals("player1") ? "player2" : "player1";
+        currentPlayer = currentPlayer.equals(player_1) ? player_2 : player_1;
         updateCurrentPlayerGrids();
         // placedShips.clear();  // Reset the placed ships for the new player
-        printCurrentPlayerDefendGrid();
+        // printCurrentPlayerDefendGrid();
         //readyButton.setEnabled(false);  // Disable ready button until ships are placed
         updateBoardUI();
     }
 
     //start of experimentalcode:
     private void handleReadyButton() {
-        if (currentPlayer.equals("player1")) {
+        if (currentPlayer.equals(player_1)) {
             
             // Switch to Player 2 for ship placement
             switchPlayer();  // Switch to player 2
@@ -334,10 +283,10 @@ public class BattleshipGame extends GameFramework {
      */
     @Override
     protected void onGridButtonClicked(int row, int col) {
-        if (isShootingPhase) {
+        if (isShootingPhase && currentPlayer.equals(player_2)) {
                 handleShot(row, col);
             
-        } else {
+        } if(!isShootingPhase && currentPlayer.equals(player_1)) {
             // Ship placement logic (setup phase)
             if (draggedShip != null) {
                 int shipSize = getShipSize(draggedShip.getText());
@@ -364,6 +313,37 @@ public class BattleshipGame extends GameFramework {
             }
         }
     }
+    protected void onGridButtonClicked2(int row, int col) {
+        if (isShootingPhase && currentPlayer.equals(player_1)) {
+            handleShot(row, col);
+        
+    } if(!isShootingPhase && currentPlayer.equals(player_2)) {
+        // Ship placement logic (setup phase)
+        if (draggedShip != null) {
+            int shipSize = getShipSize(draggedShip.getText());
+            String shipName = draggedShip.getText().split(" ")[0];
+
+            if (placedShips.contains(shipName)) {
+                JOptionPane.showMessageDialog(this, "This ship has already been placed!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Place ship on the current player's defend grid
+            if (canPlaceShip(row, col, shipSize)) {
+                placeShip(row, col, shipSize);
+                placedShips.add(shipName);
+
+                if (placedShips.size() == count) {  // All ships placed
+                    readyButton.setEnabled(true);  // Enable ready button
+                }
+
+                draggedShip = null;  // Reset dragged ship
+            } else {
+                 JOptionPane.showMessageDialog(this, "Invalid ship placement!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+}
 
     /**
      * Helper method to get the size of a ship from its label.
@@ -392,7 +372,7 @@ public class BattleshipGame extends GameFramework {
             }
         }
         updateBoardUI();
-        printCurrentPlayerDefendGrid();
+        // printCurrentPlayerDefendGrid();
     }
 
     /**
@@ -479,7 +459,7 @@ public class BattleshipGame extends GameFramework {
      */
     private void StartBattlephase() {
         isShootingPhase = true;  // Enable shooting phase
-        currentPlayer = "player1";  // Set starting player
+        currentPlayer = player_1;  // Set starting player
         updateCurrentPlayerGrids();  // Update grids for the current player
         updateBoardUI();  // Refresh UI
 
@@ -501,8 +481,8 @@ public class BattleshipGame extends GameFramework {
      */
     private boolean handleShot(int row, int col) {
 
-        char[][] opponentDefendGrid = currentPlayer.equals("player1") ? player2DefendGrid : player1DefendGrid;
-        char[][] currentPlayerAttackGrid = currentPlayer.equals("player1") ? player1AttackGrid : player2AttackGrid;
+        char[][] opponentDefendGrid = currentPlayer.equals(player_1) ? player2DefendGrid : player1DefendGrid;
+        char[][] currentPlayerAttackGrid = currentPlayer.equals(player_1) ? player1AttackGrid : player2AttackGrid;
 
         
         // Check if this cell has already been attacked
@@ -576,7 +556,7 @@ public class BattleshipGame extends GameFramework {
         updateBoardUI();
         shipPanel.setVisible(true); // Make the ship panel visible again
         placedShips.clear();
-        currentPlayer = "player1";
+        currentPlayer = player_1;
         updateCurrentPlayerGrids();
         readyButton.setEnabled(false);
         
@@ -619,43 +599,43 @@ public class BattleshipGame extends GameFramework {
     /**
      * Prints the current player's defense grid to the terminal.
      */
-    private void printCurrentPlayerDefendGrid() {
-        System.out.println("player 1 attack Grid:");
-        for (int row = 0; row < GRID_ROWS; row++) {
-            for (int col = 0; col < GRID_COLS; col++) {
-                System.out.print(player1AttackGrid[row][col] + " ");
-            }
-            System.out.println();  // Move to the next line after each row
-        }
-        System.out.println();  // Extra line for better readability
+    // private void printCurrentPlayerDefendGrid() {
+    //     System.out.println("player 1 attack Grid:");
+    //     for (int row = 0; row < GRID_ROWS; row++) {
+    //         for (int col = 0; col < GRID_COLS; col++) {
+    //             System.out.print(player1AttackGrid[row][col] + " ");
+    //         }
+    //         System.out.println();  // Move to the next line after each row
+    //     }
+    //     System.out.println();  // Extra line for better readability
     
-    System.out.println(" player 1 Defend Grid:");
-        for (int row = 0; row < GRID_ROWS; row++) {
-            for (int col = 0; col < GRID_COLS; col++) {
-                System.out.print(player1DefendGrid[row][col] + " ");
-            }
-            System.out.println();  // Move to the next line after each row
-        }
-        System.out.println();  // Extra line for better readability
+    // System.out.println(" player 1 Defend Grid:");
+    //     for (int row = 0; row < GRID_ROWS; row++) {
+    //         for (int col = 0; col < GRID_COLS; col++) {
+    //             System.out.print(player1DefendGrid[row][col] + " ");
+    //         }
+    //         System.out.println();  // Move to the next line after each row
+    //     }
+    //     System.out.println();  // Extra line for better readability
     
-    System.out.println( "player 2 Attack Grid:");
-        for (int row = 0; row < GRID_ROWS; row++) {
-            for (int col = 0; col < GRID_COLS; col++) {
-                System.out.print(player2AttackGrid[row][col] + " ");
-            }
-            System.out.println();  // Move to the next line after each row
-        }
-        System.out.println();  // Extra line for better readability
+    // System.out.println( "player 2 Attack Grid:");
+    //     for (int row = 0; row < GRID_ROWS; row++) {
+    //         for (int col = 0; col < GRID_COLS; col++) {
+    //             System.out.print(player2AttackGrid[row][col] + " ");
+    //         }
+    //         System.out.println();  // Move to the next line after each row
+    //     }
+    //     System.out.println();  // Extra line for better readability
 
-        System.out.println( "player 2 defend Grid:");
-        for (int row = 0; row < GRID_ROWS; row++) {
-            for (int col = 0; col < GRID_COLS; col++) {
-                System.out.print(player2DefendGrid[row][col] + " ");
-            }
-            System.out.println();  // Move to the next line after each row
-        }
-        System.out.println();  // Extra line for better readability
-    }
+    //     System.out.println( "player 2 defend Grid:");
+    //     for (int row = 0; row < GRID_ROWS; row++) {
+    //         for (int col = 0; col < GRID_COLS; col++) {
+    //             System.out.print(player2DefendGrid[row][col] + " ");
+    //         }
+    //         System.out.println();  // Move to the next line after each row
+    //     }
+    //     System.out.println();  // Extra line for better readability
+    // }
 
 
 }

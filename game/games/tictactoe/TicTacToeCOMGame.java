@@ -14,7 +14,7 @@ public class TicTacToeCOMGame extends GameFramework {
      * base starting player set to X
      */
     public TicTacToeCOMGame() {
-        super(3,3); // generate a 3x3 grid from the parent framework
+        super(3,3,600,650,""); // generate a 3x3 grid from the parent framework
         currentPlayer = 'X'; // X as the starting player
         gameActive = true; // if this point is reached, the game should be active
         setResizable(false);

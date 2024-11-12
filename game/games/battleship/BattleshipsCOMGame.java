@@ -12,7 +12,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
-import javax.swing.Timer;
 
 public class BattleshipsCOMGame extends GameFramework {
     private static final int GRID_ROWS = 8;
@@ -43,7 +42,7 @@ public class BattleshipsCOMGame extends GameFramework {
      * Initializes an 8x8 grid for the game and sets up the ship panel at the bottom.
      */
     public BattleshipsCOMGame() {
-        super(GRID_COLS, GRID_ROWS);
+        super(GRID_COLS, GRID_ROWS,1500,800,"");
         setTitle("Battleships vs COM");
 
         statusLabel.setText("Current player: " + currentPlayer);
