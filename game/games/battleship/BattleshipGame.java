@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
 
-
+//(testen of job git werkt) Wie dit leest is gek
 /**
  * BattleshipGame class extending GameFramework.
  */
