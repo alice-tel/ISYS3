@@ -72,7 +72,7 @@ public abstract class GameFramework extends JFrame {
                 
             }
         }
-        
+        containerPanel.add(gridPanel1);
     if( getGameName().contains("Battleships"))
         containerPanel.add(gridPanel2);
         for (int i = 0; i < rows; i++) {
@@ -87,8 +87,6 @@ public abstract class GameFramework extends JFrame {
                 
             }
         }
-
-        containerPanel.add(gridPanel1);
         gamePanel.add(containerPanel, BorderLayout.CENTER);
         tabbedPaneL.addTab("Game", gamePanel);
 

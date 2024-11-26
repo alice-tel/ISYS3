@@ -1,5 +1,6 @@
 package game.games.battleship;
 
+import game.games.battleship.battleshippvp;
 import game.framework.GameFramework;
 import game.games.battleship.Battleship_rules;
 import javax.print.DocFlavor.STRING;
@@ -37,11 +38,11 @@ public class BattleshipGame extends GameFramework {
     private JPanel shipPanel;
     private JLabel draggedShip;
     private Point initialClick;
-    private String currentPlayer = "player1"; // Player name (could be set from login)
+    private String currentPlayer = player_1; // Player name (could be set from login)
     private Set<String> placedShips = new HashSet<>();  // To track placed ships
     private boolean isHorizontal = true;  // Default ship placement orientation
     private JButton readyButton; // Ready-knop
-    char[][] targetDefendGrid = currentPlayer.equals("player1") ? player2DefendGrid : player1DefendGrid;
+    char[][] targetDefendGrid = currentPlayer.equals(player_1) ? player2DefendGrid : player1DefendGrid;
 
     /**
      * Constructor
@@ -71,7 +72,30 @@ public class BattleshipGame extends GameFramework {
         // Establish connection to the server
         // connectToServer();
     }
-
+public int getrow(){
+    return GRID_ROWS;
+}
+public int getcol(){
+    return GRID_COLS;
+}
+public String getplayer1(){
+    return player_1;
+}
+public char[][] getplayer1defendgrid(){
+    return player1DefendGrid;
+}
+public boolean sethorizontal(Boolean i){
+    return isHorizontal = i;
+}
+public void setplayer2(String player){
+    player_2 = player;
+}
+public boolean getshotingfase(){
+    return isShootingPhase;
+}
+public String getcurrentplayer(){
+    return currentPlayer;
+}
 
 
     /**
@@ -90,13 +114,14 @@ public class BattleshipGame extends GameFramework {
     /**
      * Switch between players.
      */
-    private void switchPlayer() {
+    public void switchPlayer() {
         currentPlayer = currentPlayer.equals(player_1) ? player_2 : player_1;
         updateCurrentPlayerGrids();
         // placedShips.clear();  // Reset the placed ships for the new player
         // printCurrentPlayerDefendGrid();
         //readyButton.setEnabled(false);  // Disable ready button until ships are placed
         updateBoardUI();
+        
     }
 
     //start of experimentalcode:
@@ -118,10 +143,10 @@ public class BattleshipGame extends GameFramework {
     /**
      * Updates the UI for both the defend and attack grids for the current player.
      */
-    private void updateBoardUI() {
+    public void updateBoardUI() {
         for (int row = 0; row < GRID_ROWS; row++) {
             for (int col = 0; col < GRID_COLS; col++) {
-                if (currentPlayer.equals("player1")){
+                if (currentPlayer.equals(player_1)){
                 if (currentPlayerDefendGrid[row][col] == 'S'){
                     gridButtons[row][col].setBackground(Color.GRAY);
                 } 
@@ -287,30 +312,7 @@ public class BattleshipGame extends GameFramework {
                 handleShot(row, col);
             
         } if(!isShootingPhase && currentPlayer.equals(player_1)) {
-            // Ship placement logic (setup phase)
-            if (draggedShip != null) {
-                int shipSize = getShipSize(draggedShip.getText());
-                String shipName = draggedShip.getText().split(" ")[0];
-
-                if (placedShips.contains(shipName)) {
-                    JOptionPane.showMessageDialog(this, "This ship has already been placed!", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                // Place ship on the current player's defend grid
-                if (canPlaceShip(row, col, shipSize)) {
-                    placeShip(row, col, shipSize);
-                    placedShips.add(shipName);
-
-                    if (placedShips.size() == count) {  // All ships placed
-                        readyButton.setEnabled(true);  // Enable ready button
-                    }
-
-                    draggedShip = null;  // Reset dragged ship
-                } else {
-                     JOptionPane.showMessageDialog(this, "Invalid ship placement!", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
+            placeShips(row, col);
         }
     }
     protected void onGridButtonClicked2(int row, int col) {
@@ -319,28 +321,32 @@ public class BattleshipGame extends GameFramework {
         
     } if(!isShootingPhase && currentPlayer.equals(player_2)) {
         // Ship placement logic (setup phase)
-        if (draggedShip != null) {
-            int shipSize = getShipSize(draggedShip.getText());
-            String shipName = draggedShip.getText().split(" ")[0];
+        placeShips(row, col);
+        }
+    }
 
-            if (placedShips.contains(shipName)) {
-                JOptionPane.showMessageDialog(this, "This ship has already been placed!", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
+public void placeShips(int row, int col){
+    if (draggedShip != null) {
+        int shipSize = getShipSize(draggedShip.getText());
+        String shipName = draggedShip.getText().split(" ")[0];
+
+        if (placedShips.contains(shipName)) {
+            JOptionPane.showMessageDialog(this, "This ship has already been placed!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Place ship on the current player's defend grid
+        if (canPlaceShip(row, col, shipSize)) {
+            placeShip(row, col, shipSize);
+            placedShips.add(shipName);
+
+            if (placedShips.size() == count) {  // All ships placed
+                readyButton.setEnabled(true);  // Enable ready button
             }
 
-            // Place ship on the current player's defend grid
-            if (canPlaceShip(row, col, shipSize)) {
-                placeShip(row, col, shipSize);
-                placedShips.add(shipName);
-
-                if (placedShips.size() == count) {  // All ships placed
-                    readyButton.setEnabled(true);  // Enable ready button
-                }
-
-                draggedShip = null;  // Reset dragged ship
-            } else {
-                 JOptionPane.showMessageDialog(this, "Invalid ship placement!", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            draggedShip = null;  // Reset dragged ship
+        } else {
+             JOptionPane.showMessageDialog(this, "Invalid ship placement!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
@@ -363,7 +369,7 @@ public class BattleshipGame extends GameFramework {
      * @param col      Starting column
      * @param shipSize The size of the ship
      */
-    private void placeShip(int row, int col, int shipSize) {
+    public void placeShip(int row, int col, int shipSize) {
         for (int i = 0; i < shipSize; i++) {
             if (isHorizontal) {
                 currentPlayerDefendGrid[row][col + i] = 'S';  // 'S' for ship
@@ -383,7 +389,7 @@ public class BattleshipGame extends GameFramework {
      * @param shipSize The size of the ship
      * @return true if the ship can be placed, false otherwise
      */
-    private boolean canPlaceShip(int row, int col, int shipSize) {
+    public boolean canPlaceShip(int row, int col, int shipSize) {
         if (isHorizontal) {
             // Controleer of het schip binnen de grenzen blijft
             if (col + shipSize > GRID_COLS) return false;
@@ -439,7 +445,7 @@ public class BattleshipGame extends GameFramework {
     /**
      * Move to the shooting phase after ships are placed.
      */
-    private void goToShootingPhase() {
+    public void goToShootingPhase() {
         shipPanel.setVisible(false);
         statusLabel.setText("Shooting phase! Attack your opponent.");
 
@@ -479,7 +485,7 @@ public class BattleshipGame extends GameFramework {
      * @param col The column of the target cell.
      * @return true if the shot was valid, false if the cell was already targeted.
      */
-    private boolean handleShot(int row, int col) {
+    public boolean handleShot(int row, int col) {
 
         char[][] opponentDefendGrid = currentPlayer.equals(player_1) ? player2DefendGrid : player1DefendGrid;
         char[][] currentPlayerAttackGrid = currentPlayer.equals(player_1) ? player1AttackGrid : player2AttackGrid;
@@ -503,9 +509,9 @@ public class BattleshipGame extends GameFramework {
                 statusLabel.setText(currentPlayer + " won!");
                 resetGame();
             }
-            if(opponentDefendGrid[row+1][col]!= 'S' && opponentDefendGrid[row-1][col]!= 'S' && opponentDefendGrid[row][col+1]!= 'S' && opponentDefendGrid[row][col-1]!= 'S'){
-                statusLabel.setText(currentPlayer + " sunk a ship!");
-            }
+            // if(opponentDefendGrid[row+1][col]!= 'S' && opponentDefendGrid[row-1][col]!= 'S' && opponentDefendGrid[row][col+1]!= 'S' && opponentDefendGrid[row][col-1]!= 'S'){
+            //     statusLabel.setText(currentPlayer + " sunk a ship!");
+            // }
         } 
         else {
             currentPlayerAttackGrid[row][col] = 'X';  // Mark as miss on current player's attack grid
@@ -591,10 +597,6 @@ public class BattleshipGame extends GameFramework {
     private void sendMove(int position) {
         out.println(currentPlayer + " attacked position " + position);
     }
-
-    /**
-     * Establishes a connection to the game server.
-     */
 
     /**
      * Prints the current player's defense grid to the terminal.
