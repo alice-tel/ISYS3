@@ -200,38 +200,55 @@ public class BattleshipsCOMGame extends GameFramework {
         // For example, handle player moves, check for hits, or update the attack grid.
         System.out.println("Grid button clicked at row: " + row + ", col: " + col);
         if (isShootingPhase) {
-            handleShot(row, col);
-
+           return;
         } else {
             // Ship placement logic (setup phase)
-            if (draggedShip != null) {
-                int shipSize = getShipSize(draggedShip.getText());
-                String shipName = draggedShip.getText().split(" ")[0];
-
-                if (placedShips.contains(shipName)) {
-                    JOptionPane.showMessageDialog(this, "This ship has already been placed!", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                // Place ship on the current player's defend grid
-                if (canPlaceShip(row, col, shipSize)) {
-                    placeShip(row, col, shipSize);
-                    placedShips.add(shipName);
-
-                    if (placedShips.size() == count) {  // All ships placed
-                        readyButton.setEnabled(true);  // Enable ready button
-                    }
-
-                    draggedShip = null;  // Reset dragged ship
-                } else {
-                    JOptionPane.showMessageDialog(this, "Invalid ship placement!", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
+            placeShips(row,col);
         }
 
 
         // Toggle current player if needed, or add other game logic here.
     }
+    @Override
+    protected void onGridButtonClicked2(int row, int col) {
+         // Implement the logic for what happens when a grid button is clicked.
+        // For example, handle player moves, check for hits, or update the attack grid.
+        System.out.println("Grid button clicked at row: " + row + ", col: " + col);
+        if (isShootingPhase && currentPlayer.equals("player1")) {
+            handleShot(row, col);
+
+        } else {
+            // Ship placement logic (setup phase)
+            return;
+            }
+        }
+    
+    public void placeShips(int row, int col){
+        if (draggedShip != null) {
+            int shipSize = getShipSize(draggedShip.getText());
+            String shipName = draggedShip.getText().split(" ")[0];
+
+            if (placedShips.contains(shipName)) {
+                JOptionPane.showMessageDialog(this, "This ship has already been placed!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Place ship on the current player's defend grid
+            if (canPlaceShip(row, col, shipSize)) {
+                placeShip(row, col, shipSize);
+                placedShips.add(shipName);
+
+                if (placedShips.size() == count) {  // All ships placed
+                    readyButton.setEnabled(true);  // Enable ready button
+                }
+
+                draggedShip = null;  // Reset dragged ship
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid ship placement!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
 
     private void initializeShipPanel() {
         shipPanel = new JPanel();
