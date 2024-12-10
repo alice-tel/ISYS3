@@ -4,7 +4,7 @@ import game.framework.GameFramework;
 
 public class StrategoGame extends GameFramework{
     public StrategoGame(int size){
-        super(size,size, 1600, 900,"hoi");
+        super(size,size, 1600, 900,"Hier moeten de spelregels vaan Stratego komen");
         setVisible(true);
     }
 
@@ -15,7 +15,6 @@ public class StrategoGame extends GameFramework{
 
     @Override
     protected void onGridButtonClicked(int row, int col) {
-        // TODO Auto-generated method stub
         return;
     }
 }
