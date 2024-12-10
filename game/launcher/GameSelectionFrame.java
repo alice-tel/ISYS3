@@ -20,6 +20,7 @@ public class GameSelectionFrame extends JFrame {
         JButton ticTacToeButton = new JButton("Tic-Tac-Toe");
         JButton battleshipButton = new JButton("Battleships");
         JButton pestenButton = new JButton("Pesten");
+        JButton StrategoButton = new JButton("Stratego");
 
         ticTacToeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -31,10 +32,15 @@ public class GameSelectionFrame extends JFrame {
                 new GameOptionsFrame("Battleships");
             }
         });
+        StrategoButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new GameOptionsFrame("Stratego");
+            }});
         pestenButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) { new GameOptionsFrame("Pesten"); }
         });
-
+        
+        panel.add(StrategoButton);
         panel.add(ticTacToeButton);
         panel.add(battleshipButton);
         panel.add(pestenButton);

@@ -84,6 +84,8 @@ public class GameOptionsFrame extends JFrame {
             new BattleshipGame(); // Start Battleship player vs player
         } else if (gameName.equals("Battleships") && mode.equals("Player vs Computer")) {
             new BattleshipsCOMGame(); // Start Battleship player vs computer
+        } else if (gameName.equals("Stratego")) {
+            new SelectGridSize(); // Start PvC TicTacToe gameelse if (gameName.equals("Pesten") && mode.equals("Player vs Player")) {
         } else if (gameName.equals("Pesten") && mode.equals("Player vs Player")) {
             ArrayList<Player> players = new ArrayList<>();
             players.add(new Player("Player 1"));

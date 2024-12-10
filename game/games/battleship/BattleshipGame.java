@@ -1,6 +1,6 @@
 package game.games.battleship;
 
-import game.games.battleship.battleshippvp;
+
 import game.framework.GameFramework;
 import game.games.battleship.Battleship_rules;
 import javax.print.DocFlavor.STRING;
