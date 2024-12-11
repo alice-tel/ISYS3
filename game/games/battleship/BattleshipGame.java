@@ -2,8 +2,6 @@ package game.games.battleship;
 
 
 import game.framework.GameFramework;
-import game.games.battleship.Battleship_rules;
-import javax.print.DocFlavor.STRING;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;

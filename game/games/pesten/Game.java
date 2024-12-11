@@ -18,6 +18,10 @@ public class Game {
         startGame();
     }
 
+    public Game() {
+        //TODO Auto-generated constructor stub
+    }
+
     public void startGame() {
         for (Player player : players) {
             for (int i = 0; i < 7; i++) {
