@@ -1,6 +1,8 @@
 package game.launcher;
 
 import game.games.Stratego.StrategoGame;
+import game.games.Stratego.Pion.Game;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

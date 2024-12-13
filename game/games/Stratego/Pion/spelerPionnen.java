@@ -4,31 +4,65 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
+
+import game.games.Stratego.Strategys.IAttackStrategy;
+import game.games.Stratego.Strategys.IMoveStrategy;
+
 import java.awt.*;
-import game.framework.GameFramework;
+
 
 public class spelerPionnen {
-    private JPanel pionpanel;
+    private static
+     JPanel pionpanel;
     private ArrayList<Pion> pionnen;
+    private HashMap<String, Integer> pionTelling; // Map voor het bijhouden van pionnenaantallen
 
     public spelerPionnen() {
         pionnen = new ArrayList<>();
+        pionTelling = new HashMap<>(); // Initialiseer de HashMap
+        pionpanel = new JPanel();
         initializePionnen();
     }
 
     private void initializePionnen() {
-        for (int i = 0; i < 6; i++) { pionnen.add(new Pion("Bomb", 11, new noMove(), new noAttack())); }
-        pionnen.add(new Pion("Marshal", 10, new Move(), new Attack()));
-        pionnen.add(new Pion("General", 9, new Move(), new Attack()));
-        for (int i = 0; i < 2; i++) { pionnen.add(new Pion("Colonel", 8, new Move(), new Attack())); }
-        for (int i = 0; i < 3; i++) { pionnen.add(new Pion("Major", 7, new Move(), new Attack())); }
-        for (int i = 0; i < 4; i++) { pionnen.add(new Pion("Captain", 6, new Move(), new Attack())); }
-        for (int i = 0; i < 4; i++) { pionnen.add(new Pion("Lieutenant", 5, new Move(), new Attack())); }
-        for (int i = 0; i < 4; i++) { pionnen.add(new Pion("Sergeant", 4, new Move(), new Attack())); }
-        for (int i = 0; i < 5; i++) { pionnen.add(new Pion("Miner", 3, new Move(), new MinerAttack())); }
-        for (int i = 0; i < 8; i++) { pionnen.add(new Pion("Scout", 2, new ScoutMove(), new Attack())); }
-        pionnen.add(new Pion("Spy", 1, new Move(), new SpyAttack()));
-        pionnen.add(new Pion("Flag", 0, new noMove(), new noAttack()));
+        voegPionnenToe("Bomb", 11, 6, new noMove(), new noAttack());
+        voegPionnenToe("Marshal", 10, 1, new Move(), new Attack());
+        voegPionnenToe("General", 9, 1, new Move(), new Attack());
+        voegPionnenToe("Colonel", 8, 2, new Move(), new Attack());
+        voegPionnenToe("Major", 7, 3, new Move(), new Attack());
+        voegPionnenToe("Captain", 6, 4, new Move(), new Attack());
+        voegPionnenToe("Lieutenant", 5, 4, new Move(), new Attack());
+        voegPionnenToe("Sergeant", 4, 4, new Move(), new Attack());
+        voegPionnenToe("Miner", 3, 5, new Move(), new MinerAttack());
+        voegPionnenToe("Scout", 2, 8, new ScoutMove(), new Attack());
+        voegPionnenToe("Spy", 1, 1, new Move(), new SpyAttack());
+        voegPionnenToe("Flag", 0, 1, new noMove(), new noAttack());
+    }
+
+    private void voegPionnenToe(String naam, int waarde, int aantal, IMoveStrategy moveStrategy, IAttackStrategy attackStrategy) {
+        for (int i = 0; i < aantal; i++) {
+            pionnen.add(new Pion(naam, waarde, moveStrategy, attackStrategy));
+        }
+
+        pionTelling.put(naam, pionTelling.getOrDefault(naam, 0) + aantal);
+
+        if (pionTelling.get(naam) == aantal) {
+            Showpionnen(naam, waarde, aantal);
+        }
+    }
+
+    public void Showpionnen(String naam, int waarde, int aantal) {
+        pionpanel.setLayout(new FlowLayout());
+        pionpanel.setBackground(Color.LIGHT_GRAY);
+        pionpanel.setPreferredSize(new Dimension(300, 600));
+
+        JButton button = new JButton(naam + " " + waarde + " (" + aantal + ")");
+        button.addActionListener(e -> JOptionPane.showMessageDialog(null,
+                "Je hebt " + aantal + " van de " + naam));
+        pionpanel.add(button);
+    }
+
+    public static JPanel getPionPanel() {
+        return pionpanel;
     }
 }
-

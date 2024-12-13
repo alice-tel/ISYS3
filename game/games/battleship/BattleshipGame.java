@@ -88,7 +88,7 @@ public boolean sethorizontal(Boolean i){
 public void setplayer2(String player){
     player_2 = player;
 }
-public boolean getshotingfase(){
+public boolean getshootingfase(){
     return isShootingPhase;
 }
 public String getcurrentplayer(){
@@ -228,7 +228,6 @@ public String getcurrentplayer(){
         shipPanel.setLayout(new FlowLayout());
         shipPanel.setBackground(Color.LIGHT_GRAY);
 
-        // Example ships of different sizes
         createShip("Carrier", 6);
         createShip("Battleship", 4);
         createShip("Cruiser", 3);
@@ -249,7 +248,7 @@ public String getcurrentplayer(){
      * @param shipName The name of the ship
      * @param size     The size of the ship (number of grid cells it occupies)
      */
-    private void createShip(String shipName, int size) {
+    public void createShip(String shipName, int size) {
         count ++;
         JLabel shipLabel = new JLabel(shipName + " (" + size + ")");
         shipLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
