@@ -3,6 +3,7 @@ package game.games.Stratego;
 import java.awt.*;
 import javax.swing.*;
 import game.framework.GameFramework;
+import game.games.Stratego.Bordspul.Placepion;
 import game.games.Stratego.Pion.*;
 
 public class StrategoGame extends GameFramework {
@@ -21,10 +22,8 @@ public class StrategoGame extends GameFramework {
         JPanel pionPanel = spelerPionnen.getPionPanel();
 
         add(pionPanel,BorderLayout.EAST);
-        
-        
+                
     }
-
 
     @Override
     protected String getGameName() {
@@ -33,6 +32,11 @@ public class StrategoGame extends GameFramework {
 
     @Override
     protected void onGridButtonClicked(int row, int col) {
-        return;
+        new Placepion(row,col);
+            }
+    
+    public static void Setgridbutton(int row, int col, Color color){
+
     }
+        
 }

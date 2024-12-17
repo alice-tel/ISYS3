@@ -65,7 +65,10 @@ public class spelerPionnen {
         pionpanel.setBackground(Color.LIGHT_GRAY);
         pionpanel.setPreferredSize(new Dimension(300, 600));
 
-        JButton button = new JButton(naam + " " + waarde + " (" + aantal + ")");
+        JButton button = new JButton(waarde < 11 
+        ? (naam + " " + waarde + " (" + aantal + ")") 
+        : (naam + " (" + aantal + ")"));
+
         button.addActionListener(e -> JOptionPane.showMessageDialog(null,
                 "Je hebt " + aantal + " van de " + naam));
         pionpanel.add(button);
