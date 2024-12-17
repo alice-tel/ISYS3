@@ -16,7 +16,7 @@ public class StrategoGame extends GameFramework {
         statusLabel.setText("hello");
         setVisible(true); // Show the frame
         
-        new Game();
+        new Game(size);
 
         JPanel pionPanel = spelerPionnen.getPionPanel();
 

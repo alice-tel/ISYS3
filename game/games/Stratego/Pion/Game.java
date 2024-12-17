@@ -6,14 +6,15 @@ public class Game {
     private Scanner scanner;
     private spelerPionnen pionnenSpeler1;
     private spelerPionnen pionnenSpeler2;
+    private int size;
 
-
-    public Game(){
+    public Game(int size){
+        this.size = size;
         startRegularGame();
     }
 
     public void startRegularGame() {
-        pionnenSpeler1 = new spelerPionnen();
-        pionnenSpeler2 = new spelerPionnen();
+        pionnenSpeler1 = new spelerPionnen(size);
+        pionnenSpeler2 = new spelerPionnen(size);
     }
 }
