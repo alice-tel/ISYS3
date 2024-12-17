@@ -9,7 +9,7 @@ import java.awt.*;
  * !!! be sure to add overrides for the getGameName and onGridButtonClicked methods when extending !!!
  */
 public abstract class GameFramework extends JFrame {
-    protected JButton[][] gridButtons;
+    protected static JButton[][] gridButtons;
     protected JButton[][] gridButtonsPlayerTwo;
     protected int columns;
     protected int rows;
@@ -64,7 +64,7 @@ public abstract class GameFramework extends JFrame {
             for (int j = 0; j < columns; j++) {
                 gridButtons[i][j] = new JButton("");
                 gridButtons[i][j].setOpaque(true);
-                gridButtons[i][j].setFont(new Font("Arial", Font.PLAIN, 60));
+                gridButtons[i][j].setFont(new Font("Arial", Font.PLAIN, 30));
                 int finalI = i;
                 int finalJ = j;
                 gridButtons[i][j].addActionListener(e -> onGridButtonClicked(finalI, finalJ));
