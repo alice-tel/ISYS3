@@ -25,7 +25,7 @@ public class spelerPionnen {
 
     public spelerPionnen(int size) {
         pionnen = new ArrayList<>();
-        geselecteerdePion = new ArrayList<>();
+        geselecteerdePion = new ArrayList<String>();
         pionTelling = new HashMap<>(); // Initialiseer de HashMap
         pionpanel = new JPanel();
         pionpanel.setLayout(new BoxLayout(pionpanel, BoxLayout.Y_AXIS)); // Layout verticaal
@@ -94,12 +94,15 @@ public class spelerPionnen {
                     // Klik nogmaals: deselecteer knop
                     huidigeKnop.setBackground(Color.WHITE);
                     huidigeKnop = null;
+                    geselecteerdePion.clear();
+                    waardegeselecteerdePion = 13;
                 } else {
                     // Selecteer knop
                     if (aantalOver > 0) {
                         button.setBackground(Color.ORANGE);
                         huidigeKnop = button;
-                        geselecteerdePion.set(1,naam);
+                        geselecteerdePion.clear();
+                        geselecteerdePion.add(naam);
                         waardegeselecteerdePion = waarde;
                     } else {
                         JOptionPane.showMessageDialog(null,
