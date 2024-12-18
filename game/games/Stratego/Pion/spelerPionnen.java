@@ -19,12 +19,13 @@ public class spelerPionnen {
     private ArrayList<Pion> pionnen;
     private HashMap<String, Integer> pionTelling; // Map voor het bijhouden van pionnenaantallen
     private JButton huidigeKnop; // Houdt de huidige geselecteerde knop bij
-    private List<String> geselecteerdePionnen; // Lijst van geselecteerde pionnen
+    private List<String> geselecteerdePion; // Lijst van geselecteerde pionnen
+    private int waardegeselecteerdePion; // Lijst van geselecteerde pionnen
     private int aantalOver;
 
     public spelerPionnen(int size) {
         pionnen = new ArrayList<>();
-        geselecteerdePionnen = new ArrayList<>();
+        geselecteerdePion = new ArrayList<>();
         pionTelling = new HashMap<>(); // Initialiseer de HashMap
         pionpanel = new JPanel();
         pionpanel.setLayout(new BoxLayout(pionpanel, BoxLayout.Y_AXIS)); // Layout verticaal
@@ -98,7 +99,8 @@ public class spelerPionnen {
                     if (aantalOver > 0) {
                         button.setBackground(Color.ORANGE);
                         huidigeKnop = button;
-                        geselecteerdePionnen.add(naam);
+                        geselecteerdePion.set(1,naam);
+                        waardegeselecteerdePion = waarde;
                     } else {
                         JOptionPane.showMessageDialog(null,
                                 "Geen pionnen meer beschikbaar voor " + naam);

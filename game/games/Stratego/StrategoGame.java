@@ -27,7 +27,7 @@ public class StrategoGame extends GameFramework {
         allePionnen = new String[size][size];
         
         initializGrids();
-        statusLabel.setText("hell");
+        statusLabel.setText("Stratego");
         setVisible(true); // Show the frame
 
         new Game(size);
@@ -83,7 +83,6 @@ public class StrategoGame extends GameFramework {
         }
     
     
-
     @Override
     protected String getGameName() {
         return "Stratego";

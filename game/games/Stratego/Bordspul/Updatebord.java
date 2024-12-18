@@ -10,7 +10,6 @@ public class Updatebord {
     public Updatebord(String[][] bord) {
         this.bord = bord;
         updateBoardUI();
-        print();
     }
 
     public void updateBoardUI() {
@@ -33,15 +32,5 @@ public class Updatebord {
                 }
             }
         }
-    }
-    public void print(){
-    System.out.println("player 1 attack Grid:");
-        for (int row = 0; row < 10; row++) {
-            for (int col = 0; col < 10; col++) {
-                System.out.print(bord[row][col] + " ");
-            }
-            System.out.println();  // Move to the next line after each row
-        }
-        System.out.println();  // Extra line for better readability
     }
 }
