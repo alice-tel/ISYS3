@@ -2,13 +2,15 @@ package game.games.Stratego.Pion;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 import game.games.Stratego.Strategys.IAttackStrategy;
 import game.games.Stratego.Strategys.IMoveStrategy;
 
-import java.awt.*;
 
 
 public class spelerPionnen {
@@ -16,17 +18,24 @@ public class spelerPionnen {
     JPanel pionpanel;
     private ArrayList<Pion> pionnen;
     private HashMap<String, Integer> pionTelling; // Map voor het bijhouden van pionnenaantallen
+    private JButton huidigeKnop; // Houdt de huidige geselecteerde knop bij
+    private List<String> geselecteerdePion; // Lijst van geselecteerde pionnen
+    private int waardegeselecteerdePion; // Lijst van geselecteerde pionnen
+    private int aantalOver;
 
     public spelerPionnen(int size) {
         pionnen = new ArrayList<>();
+        geselecteerdePion = new ArrayList<>();
         pionTelling = new HashMap<>(); // Initialiseer de HashMap
         pionpanel = new JPanel();
+        pionpanel.setLayout(new BoxLayout(pionpanel, BoxLayout.Y_AXIS)); // Layout verticaal
+        pionpanel.setBackground(Color.LIGHT_GRAY);
+        pionpanel.setPreferredSize(new Dimension(150, 600));
         initializePionnen(size);
     }
 
     private void initializePionnen(int size) {
         if (size == 10){
-        voegPionnenToe("Bomb", 11, 6, new noMove(), new noAttack());
         voegPionnenToe("Marshal", 10, 1, new Move(), new Attack());
         voegPionnenToe("General", 9, 1, new Move(), new Attack());
         voegPionnenToe("Colonel", 8, 2, new Move(), new Attack());
@@ -37,14 +46,15 @@ public class spelerPionnen {
         voegPionnenToe("Miner", 3, 5, new Move(), new MinerAttack());
         voegPionnenToe("Scout", 2, 8, new ScoutMove(), new Attack());
         voegPionnenToe("Spy", 1, 1, new Move(), new SpyAttack());
+        voegPionnenToe("Bomb", 11, 6, new noMove(), new noAttack());
         voegPionnenToe("Flag", 0, 1, new noMove(), new noAttack());}
         if(size == 8){
-            voegPionnenToe("Bomb", 11, 2, new noMove(), new noAttack());
             voegPionnenToe("Marshal", 10, 1, new Move(), new Attack());
             voegPionnenToe("General", 9, 1, new Move(), new Attack());
             voegPionnenToe("Miner", 3, 2, new Move(), new MinerAttack());
             voegPionnenToe("Scout", 2, 2, new ScoutMove(), new Attack());
             voegPionnenToe("Spy", 1, 1, new Move(), new SpyAttack());
+            voegPionnenToe("Bomb", 11, 2, new noMove(), new noAttack());
             voegPionnenToe("Flag", 0, 1, new noMove(), new noAttack());}
         }
 
@@ -61,17 +71,46 @@ public class spelerPionnen {
     }
 
     public void Showpionnen(String naam, int waarde, int aantal) {
-        pionpanel.setLayout(new FlowLayout());
-        pionpanel.setBackground(Color.LIGHT_GRAY);
-        pionpanel.setPreferredSize(new Dimension(300, 600));
+        JButton button = new JButton((waarde > 0 && waarde < 11)
+                ? (naam + " " + waarde + " (" + aantal + ")")
+                : (naam + " (" + aantal + ")"));
 
-        JButton button = new JButton(waarde < 11 
-        ? (naam + " " + waarde + " (" + aantal + ")") 
-        : (naam + " (" + aantal + ")"));
+        aantalOver = aantal;
 
-        button.addActionListener(e -> JOptionPane.showMessageDialog(null,
-                "Je hebt " + aantal + " van de " + naam));
+        // Kleur instellen
+        button.setBackground(Color.WHITE);
+        button.setOpaque(true);
+        button.setBorderPainted(true);
+
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (huidigeKnop != null && huidigeKnop != button) {
+                    // Deselecteer vorige knop
+                    huidigeKnop.setBackground(Color.WHITE);
+                }
+
+                if (button == huidigeKnop) {
+                    // Klik nogmaals: deselecteer knop
+                    huidigeKnop.setBackground(Color.WHITE);
+                    huidigeKnop = null;
+                } else {
+                    // Selecteer knop
+                    if (aantalOver > 0) {
+                        button.setBackground(Color.ORANGE);
+                        huidigeKnop = button;
+                        geselecteerdePion.set(1,naam);
+                        waardegeselecteerdePion = waarde;
+                    } else {
+                        JOptionPane.showMessageDialog(null,
+                                "Geen pionnen meer beschikbaar voor " + naam);
+                    }
+                }
+            }
+        });
+
         pionpanel.add(button);
+        pionpanel.revalidate(); // Layout updaten
     }
 
     public static JPanel getPionPanel() {
