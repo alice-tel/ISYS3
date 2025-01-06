@@ -4,6 +4,10 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 import game.framework.GameFramework;
 import game.games.Stratego.Pion.*;
 import game.games.Stratego.Bordspul.*;
@@ -13,6 +17,7 @@ public class StrategoGame extends GameFramework {
     private JButton readyButton;
     private spelerPionnen pionnenSpeler1;
     private spelerPionnen pionnenSpeler2;
+    private spelerPionnen currentpionnenSpeler; //job comment: Ik weet niet of dit handig is maar ik gebruik dit ff voor testen
     private String[][] speler1;
     private String[][] speler2;
     private String[][] allePionnen;
@@ -30,7 +35,9 @@ public class StrategoGame extends GameFramework {
         statusLabel.setText("Stratego");
         setVisible(true); // Show the frame
 
-        new Game(size);
+        Game currentgame = new Game(size);
+        ArrayList<Pion> player1Pionnen = currentGame.getPionnenSpeler1();
+        ArrayList<Pion> player2Pionnen = currentGame.getPionnenSpeler2();
 
         JPanel pionPanel = spelerPionnen.getPionPanel();
 
@@ -88,10 +95,11 @@ public class StrategoGame extends GameFramework {
         return "Stratego";
     }
 
+
     @Override
 protected void onGridButtonClicked(int row, int col) {
     // Retrieve the selected pion from spelerPionnen
-    List<String> selectedPion = spelerPionnen.getGeselecteerdePion();                                   //job comment: Dit is zodat we de buttons aan de zijkant kunne gebruiken
+    List<String> selectedPion = currentpionnenSpeler.getGeselecteerdePion();                                   //job comment: Dit is zodat we de buttons aan de zijkant kunne gebruiken
     
     if (selectedPion != null && !selectedPion.isEmpty()) {                                                  
         String pionNaam = selectedPion.get(0); // Get the selected pion's name                              //job comment: pak de waarde van spelerpionnen Selectedpion 
@@ -123,23 +131,22 @@ protected void onGridButtonClicked(int row, int col) {
     }
 }
 
-// Helper method to check if it's Player 1's turn
-private boolean isPlayer1Turn() {
-    // Implement logic to determine the current player
-    return true; // Replace with actual turn logic
+public void switchCurrentPionnenSpeler() {
+    if (speler1Pionnen.isEmpty()) {
+        currentpionnenSpeler = speler2Pionnen; // Assuming speler2Pionnen is defined
+        System.out.println("Switched to speler 2");
+    } else {
+        currentpionnenSpeler = speler1Pionnen; // Assuming speler1Pionnen is defined
+        System.out.println("Current player remains speler 1");
+    }
 }
 
-// Switch to Player 2's placement phase
-private void switchToPlayer2() {
-    statusLabel.setText("Player 2's turn to place pieces.");
-    // Additional logic to handle the transition
+
+public void place(int playerId,  List<String> playerPionnen, List<String> geselecteerdePion, int aantalOver, JButton huidigeKnop) {
+   
 }
 
-// End the placement phase
-private void endPlacementPhase() {
-    statusLabel.setText("All pieces placed. Game ready to start.");
-    // Additional logic to start the game
-}
+
     
     public static void Setgridbutton(int row, int col, Color color){
         gridButtons[row][col].setBackground(color);

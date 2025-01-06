@@ -24,8 +24,7 @@ public class spelerPionnen {
 
     public spelerPionnen(int size) {
         pionnen = new ArrayList<>();
-        player1Pionnen = new ArrayList<>();
-        player2Pionnen = new ArrayList<>();
+
         geselecteerdePion = new ArrayList<>();
         pionTelling = new HashMap<>(); // Initialiseer de HashMap
         pionpanel = new JPanel();
@@ -33,7 +32,6 @@ public class spelerPionnen {
         pionpanel.setBackground(Color.LIGHT_GRAY);
         pionpanel.setPreferredSize(new Dimension(150, 600));
         initializePionnen(size);
-        GivePlayerPionnen(size);
     }
 
     private void initializePionnen(int size) {
@@ -59,43 +57,6 @@ public class spelerPionnen {
             voegPionnenToe("Spy", 1, 1, new Move(), new SpyAttack());
             voegPionnenToe("Bomb", 11, 2, new noMove(), new noAttack());
             voegPionnenToe("Flag", 0, 1, new noMove(), new noAttack());
-        }
-    }
-
-    private void GivePlayerPionnen(int size) {
-        if (size == 10) {
-            assignPionnenToPlayer("Marshal", 10, 1, new Move(), new Attack(), 1);
-            assignPionnenToPlayer("General", 9, 1, new Move(), new Attack(), 2);
-            assignPionnenToPlayer("Colonel", 8, 2, new Move(), new Attack(), 1);
-            assignPionnenToPlayer("Major", 7, 3, new Move(), new Attack(), 2);
-            assignPionnenToPlayer("Captain", 6, 4, new Move(), new Attack(), 1);
-            assignPionnenToPlayer("Lieutenant", 5, 4, new Move(), new Attack(), 2);
-            assignPionnenToPlayer("Sergeant", 4, 4, new Move(), new Attack(), 1);
-            assignPionnenToPlayer("Miner", 3, 5, new Move(), new MinerAttack(), 2);
-            assignPionnenToPlayer("Scout", 2, 8, new ScoutMove(), new Attack(), 1);
-            assignPionnenToPlayer("Spy", 1, 1, new Move(), new SpyAttack(), 2);
-            assignPionnenToPlayer("Bomb", 11, 6, new noMove(), new noAttack(), 1);
-            assignPionnenToPlayer("Flag", 0, 1, new noMove(), new noAttack(), 2);
-        }
-        if (size == 8) {
-            assignPionnenToPlayer("Marshal", 10, 1, new Move(), new Attack(), 1);
-            assignPionnenToPlayer("General", 9, 1, new Move(), new Attack(), 2);
-            assignPionnenToPlayer("Miner", 3, 2, new Move(), new MinerAttack(), 1);
-            assignPionnenToPlayer("Scout", 2, 2, new ScoutMove(), new Attack(), 2);
-            assignPionnenToPlayer("Spy", 1, 1, new Move(), new SpyAttack(), 1);
-            assignPionnenToPlayer("Bomb", 11, 2, new noMove(), new noAttack(), 2);
-            assignPionnenToPlayer("Flag", 0, 1, new noMove(), new noAttack(), 1);
-        }
-    }
-
-    private void assignPionnenToPlayer(String naam, int waarde, int aantal, IMoveStrategy moveStrategy, IAttackStrategy attackStrategy, int playerId) {     //job comment:idee hierachter: Ik wil niet de orginele pionnenlijst aanpassen want stel ik leeg die met speler1 dan heeft speler2 niks. Mijn idee was als volgt: Als een speler een pion plaats, (de naam van de pion wordt gepakt met thomas zijn buttons) dan wordt uit die speler zijn array 1 van de namen weggehaald en wordt t button aantal van die pion -1 gedaan. Nadat speler 1 weer klaar is met plaatsen dan moet t aantal weer omhooggegooid voor speler2.
-        for (int i = 0; i < aantal; i++) {
-            Pion pion = new Pion(naam, waarde, moveStrategy, attackStrategy, playerId);
-            if (playerId == 1) {
-                player1Pionnen.add(pion);
-            } else if (playerId == 2) {
-                player2Pionnen.add(pion);
-            }
         }
     }
 
@@ -165,8 +126,16 @@ public class spelerPionnen {
     public List<String> getGeselecteerdePion() {
         return geselecteerdePion;
     }
+
+    public ArrayList<Pion> getPlayer1Pionnen() {
+        return player1Pionnen;
+    }
     
-    public void decrementPionCount(String naam) {
+    public ArrayList<Pion> getPlayer2Pionnen() {
+        return player2Pionnen;
+    }
+    
+    public void decrementPionCount(String naam) {          //job comment: dit is bedoelt om het aantal pionnen te verminderen
         if (pionTelling.containsKey(naam)) {
             int remaining = pionTelling.get(naam) - 1;
             pionTelling.put(naam, remaining);
