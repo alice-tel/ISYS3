@@ -17,6 +17,8 @@ public class StrategoGame extends GameFramework {
     private String[][] speler2;
     private String[][] allePionnen;
     private int size;
+    private String currentSelectedPiece;
+    private Game currentGame;
 
     public StrategoGame(int size) {
         super(size, size, 1600, 900, "Hier moeten de spelregels van Stratego komen");
@@ -30,7 +32,9 @@ public class StrategoGame extends GameFramework {
         statusLabel.setText("Stratego");
         setVisible(true); // Show the frame
 
-        new Game(size);
+        currentGame = new Game(size);
+        
+        // System.out.println(currentSelectedPiece);
 
         JPanel pionPanel = spelerPionnen.getPionPanel();
 
@@ -85,12 +89,20 @@ public class StrategoGame extends GameFramework {
     
     @Override
     protected String getGameName() {
+        
         return "Stratego";
     }
 
     @Override
     protected void onGridButtonClicked(int row, int col) {
-        new Placepion(row,col);
+        currentSelectedPiece = currentGame.getSpeler1geselecteerdewaarde();
+        // System.out.println("currentgamewaarde +" currentSelectedPiece);
+        if (!currentSelectedPiece.isEmpty()){
+            System.out.println("BITC HEEFT WAARDES");
+            System.out.println(currentSelectedPiece);
+        }
+        else{System.out.println("BITCH IS LEEG");
+        System.out.println(currentSelectedPiece);}
             }
     
     public static void Setgridbutton(int row, int col, Color color){

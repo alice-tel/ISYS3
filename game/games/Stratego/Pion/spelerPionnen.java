@@ -14,18 +14,18 @@ import game.games.Stratego.Strategys.IMoveStrategy;
 
 
 public class spelerPionnen {
-    private static
-    JPanel pionpanel;
+    private static JPanel pionpanel;
     private ArrayList<Pion> pionnen;
     private HashMap<String, Integer> pionTelling; // Map voor het bijhouden van pionnenaantallen
     private JButton huidigeKnop; // Houdt de huidige geselecteerde knop bij
-    private List<String> geselecteerdePion; // Lijst van geselecteerde pionnen
+    private String geselecteerdePion = ""; // Lijst van geselecteerde pionnen
     private int waardegeselecteerdePion; // Lijst van geselecteerde pionnen
     private int aantalOver;
+    private String test = "";
 
     public spelerPionnen(int size) {
         pionnen = new ArrayList<>();
-        geselecteerdePion = new ArrayList<String>();
+        // geselecteerdePion = new String();
         pionTelling = new HashMap<>(); // Initialiseer de HashMap
         pionpanel = new JPanel();
         pionpanel.setLayout(new BoxLayout(pionpanel, BoxLayout.Y_AXIS)); // Layout verticaal
@@ -76,6 +76,7 @@ public class spelerPionnen {
                 : (naam + " (" + aantal + ")"));
 
         aantalOver = aantal;
+        
 
         // Kleur instellen
         button.setBackground(Color.WHITE);
@@ -94,29 +95,67 @@ public class spelerPionnen {
                     // Klik nogmaals: deselecteer knop
                     huidigeKnop.setBackground(Color.WHITE);
                     huidigeKnop = null;
-                    geselecteerdePion.clear();
+                    // geselecteerdePion = naam;
                     waardegeselecteerdePion = 13;
                 } else {
                     // Selecteer knop
                     if (aantalOver > 0) {
                         button.setBackground(Color.ORANGE);
                         huidigeKnop = button;
-                        geselecteerdePion.clear();
-                        geselecteerdePion.add(naam);
+                        
+                     
+                    System.out.println("Before assignment, geselecteerdePion: " + geselecteerdePion);
+                    setgeselecteerdepion(naam);
+                    //geselecteerdepion = naam
+                    System.out.println("Afther assignment, geselecteerdePion: " + geselecteerdePion);
+
+
                         waardegeselecteerdePion = waarde;
                     } else {
                         JOptionPane.showMessageDialog(null,
                                 "Geen pionnen meer beschikbaar voor " + naam);
                     }
                 }
+                
+                
             }
         });
-
         pionpanel.add(button);
         pionpanel.revalidate(); // Layout updaten
     }
 
+    public void setgeselecteerdepion(String pion){
+        System.out.println("setter" + geselecteerdePion);
+        geselecteerdePion = pion;
+        test = geselecteerdePion;
+        System.out.println("setter" + geselecteerdePion);
+
+    }
+
+    public String getgeselecteerdepion() {
+        System.out.println("test = " + test);
+        // if (geselecteerdePion.isEmpty()) {
+        //     System.out.println("No pion selected yet.");
+        //     return "";
+        // }
+        // geselecteerdePion = naam; // Or handle appropriately
+        System.out.println("spelerPIONNEN GESELECTEERDE PION TEST = " + geselecteerdePion);
+        return geselecteerdePion;
+    }
+    
+    
+    public ArrayList<Pion> getPionnen(){
+        return pionnen;
+    } 
+
     public static JPanel getPionPanel() {
         return pionpanel;
     }
+
+    // public static void main(String[] args){
+    //     spelerPionnen sp = new spelerPionnen(10);
+    //     System.out.println(" begin");
+    //     sp.setgeselecteerdepion("kaas");
+    //     System.out.println(sp.geselecteerdePion);
+    // }
 }
