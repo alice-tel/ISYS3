@@ -35,7 +35,7 @@ public class StrategoGame extends GameFramework {
         statusLabel.setText("Stratego");
         setVisible(true); // Show the frame
 
-        Game currentgame = new Game(size);
+        Game currentGame = new Game(size);
         ArrayList<Pion> player1Pionnen = currentGame.getPionnenSpeler1();
         ArrayList<Pion> player2Pionnen = currentGame.getPionnenSpeler2();
 
