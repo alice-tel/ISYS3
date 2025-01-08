@@ -36,7 +36,8 @@ public class StrategoGame extends GameFramework {
         
         // System.out.println(currentSelectedPiece);
 
-        JPanel pionPanel = spelerPionnen.getPionPanel();
+        System.out.println("PLAYER: " + currentGame.getPionnenspeler1());
+        JPanel pionPanel = currentGame.getPionnenspeler1().getPionPanel();
 
         add(pionPanel,BorderLayout.EAST);
         new Updatebord(speler1);
@@ -93,17 +94,30 @@ public class StrategoGame extends GameFramework {
         return "Stratego";
     }
 
-    @Override
-    protected void onGridButtonClicked(int row, int col) {
-        currentSelectedPiece = currentGame.getSpeler1geselecteerdewaarde();
-        // System.out.println("currentgamewaarde +" currentSelectedPiece);
-        if (!currentSelectedPiece.isEmpty()){
-            System.out.println("BITC HEEFT WAARDES");
-            System.out.println(currentSelectedPiece);
-        }
-        else{System.out.println("BITCH IS LEEG");
-        System.out.println(currentSelectedPiece);}
-            }
+    
+       @Override
+       protected void onGridButtonClicked(int row, int col) {
+           // Fetch the selected Pion object
+           Pion selectedPion = currentGame.getSpeler1SelectedPionObject();
+           
+           if (selectedPion == null) {
+               System.out.println("No pion selected to place!");
+               return;
+           }
+       
+           // Check if the grid cell is valid for placing a pion
+           if (!speler1[row][col].equals("-")) {
+               System.out.println("Cannot place here. Cell already occupied or invalid!");
+               return;
+           }
+       
+           // Place the pion on the grid
+           speler1[row][col] = selectedPion.getNaam(); // Update logical grid
+           Setgridbutton(row, col, Color.BLUE); // Update button color
+           setbuttonstext(row, col, selectedPion.getNaam()); // Set button text
+       
+           System.out.println("Placed " + selectedPion.getNaam() + " at [" + row + ", " + col + "]");
+       }
     
     public static void Setgridbutton(int row, int col, Color color){
         gridButtons[row][col].setBackground(color);
