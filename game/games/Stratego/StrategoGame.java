@@ -32,12 +32,12 @@ public class StrategoGame extends GameFramework {
         statusLabel.setText("Stratego");
         setVisible(true); // Show the frame
 
-        currentGame = new Game(size);
+        currentGame = new Game(size); //create an instance of game wich we can use.
         
         // System.out.println(currentSelectedPiece);
 
         System.out.println("PLAYER: " + currentGame.getPionnenspeler1());
-        JPanel pionPanel = currentGame.getPionnenspeler1().getPionPanel();
+        JPanel pionPanel = currentGame.getPionnenspeler1().getPionPanel(); //JPanel is currently set to only help player1, this needs changing.
 
         add(pionPanel,BorderLayout.EAST);
         new Updatebord(speler1);
@@ -96,9 +96,9 @@ public class StrategoGame extends GameFramework {
 
     
        @Override
-       protected void onGridButtonClicked(int row, int col) {
+       protected void onGridButtonClicked(int row, int col) { //ALL THIS CODE WAS FOR TESTING, REWRITE WHOLE METHOD
            // Fetch the selected Pion object
-           Pion selectedPion = currentGame.getSpeler1SelectedPionObject();
+           Pion selectedPion = currentGame.getSpeler1SelectedPionObject();//this wasnt for testing, use this.
            
            if (selectedPion == null) {
                System.out.println("No pion selected to place!");

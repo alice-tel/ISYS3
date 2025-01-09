@@ -108,10 +108,10 @@ public class spelerPionnen {
                         huidigeKnop = button;
                         
                      
-                    System.out.println("Before assignment, geselecteerdePion: " + geselecteerdePion);
+                    // System.out.println("Before assignment, geselecteerdePion: " + geselecteerdePion);
                     setgeselecteerdepion(naam);
                     //geselecteerdepion = naam
-                    System.out.println("Afther assignment, geselecteerdePion: " + geselecteerdePion);
+                    // System.out.println("Afther assignment, geselecteerdePion: " + geselecteerdePion);
                         System.out.println(getgeselecteerdepion());
 
                         waardegeselecteerdePion = waarde;
@@ -129,10 +129,9 @@ public class spelerPionnen {
     }
 
     public void setgeselecteerdepion(String pion){
-        System.out.println("setter" + geselecteerdePion);
+       
         geselecteerdePion = pion;
-        test = geselecteerdePion;
-        System.out.println("setter" + geselecteerdePion);
+    
 
     }
 
@@ -158,8 +157,8 @@ public class spelerPionnen {
         return pionpanel;
     }
     public Pion getSelectedPionObject() {
-        for (Pion pion : pionnen) {
-            if (pion.getNaam().equals(geselecteerdePion)) {
+        for (Pion pion : pionnen) { // for all pion in pionnen
+            if (pion.getNaam().equals(geselecteerdePion)) { //if the name saved on "geselecteerdePion is listed in the pionnenlist"
                 // System.out.println("PIONNEN ZIJN GELIJK");
                 return pion;
             }
