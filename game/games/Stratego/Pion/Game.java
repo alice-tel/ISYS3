@@ -15,8 +15,8 @@ public class Game {
     }
 
     public void startRegularGame() {
+        pionnenSpeler2 = new spelerPionnen(size); //this is turned off at the moment because we were testing if player1 worked
         pionnenSpeler1 = new spelerPionnen(size);
-        // pionnenSpeler2 = new spelerPionnen(size); //this is turned off at the moment because we were testing if player1 worked
         boolean isBuildingPhase = true; //Use this for onbuttongridclicked building and defending phase.
     }
 

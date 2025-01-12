@@ -21,10 +21,12 @@ public class spelerPionnen {
     private String geselecteerdePion;// Lijst van geselecteerde pionnen
     private int waardegeselecteerdePion; // Lijst van geselecteerde pionnen
     private int aantalOver;
+    private ArrayList<JButton> pionButtons; // List of buttons for each piece
     private String test = "";
 
     public spelerPionnen(int size) {
         pionnen = new ArrayList<>();
+        pionButtons = new ArrayList<>();
         this.geselecteerdePion = geselecteerdePion;
         // geselecteerdePion = new String();
         pionTelling = new HashMap<>(); // Initialiseer de HashMap
@@ -64,6 +66,7 @@ public class spelerPionnen {
             pionnen.add(new Pion(naam, waarde, moveStrategy, attackStrategy));
         }
 
+
         pionTelling.put(naam, pionTelling.getOrDefault(naam, 0) + aantal);
 
         if (pionTelling.get(naam) == aantal) {
@@ -77,7 +80,7 @@ public class spelerPionnen {
                 : (naam + " (" + aantal + ")"));
 
         aantalOver = aantal;
-        
+        pionButtons.add(button);
 
         // Kleur instellen
         button.setBackground(Color.WHITE);
@@ -99,7 +102,7 @@ public class spelerPionnen {
                     huidigeKnop.setBackground(Color.WHITE);
                     huidigeKnop = null;
                     System.out.println("Button selected: " + naam);
-                    // geselecteerdePion = naam;
+                    geselecteerdePion = null;
                     waardegeselecteerdePion = 13;
                 } else {
                     // Selecteer knop
@@ -148,7 +151,9 @@ public class spelerPionnen {
         return geselecteerdePion;
     }
     
-    
+    public int getPionwaarde(){
+        return waardegeselecteerdePion;
+    } 
     public ArrayList<Pion> getPionnen(){
         return pionnen;
     } 
@@ -167,14 +172,53 @@ public class spelerPionnen {
         }
         return null; // Return null if no matching pion is found
     }
+    
+    public void decreasePieceCount(String pionNaam) {
+        for (JButton button :pionButtons) {
+            if (button.getText().contains(pionNaam)) {
+                // Extract the count from the button text
+                int waarde;
+                String[] parts = button.getText().split(" ");
+                System.out.println(parts);
+                int count = Integer.parseInt(parts[parts.length - 1].replace("(", "").replace(")", ""));
+                if (parts.length > 2) {
+                     waarde = Integer.parseInt(parts[1]);
+                }
+                else{waarde = 13;}
+                // Decrease the count
+                
+                count--;
+    
+                // Update the button text
+                if (count > 0) {
+                    button.setText((waarde > 0 && waarde < 11)
+                    ? (pionNaam + " " + waarde + " (" + count + ")")
+                    : (pionNaam + " (" + count + ")"));
+                } else {
+                    button.setText((waarde > 0 && waarde < 11)
+                    ? (pionNaam + " " + waarde + " (" + count + ")")
+                    : (pionNaam + " (" + count + ")"));
+                    button.setEnabled(false); // Disable the button if count reaches 0
+                    button.setBackground(Color.WHITE);
+                    waardegeselecteerdePion = 13;
+                    geselecteerdePion = null;
+                }
+                    int newCount = pionTelling.get(pionNaam) - 1;
+                        pionTelling.put(pionNaam, newCount);
+                break;
+            }
+        }
+    }
+    public void addpionpanal(JButton button){
+        pionpanel.add(button);
+    }
+    public boolean availablepieces() {
+        for (int count : pionTelling.values()) {
+            if (count > 0) {
+                return true; // there are stil available pieces
+            }
+        }
+        return false; // no available pieces
+    }
+    
 }
-    
-    
-
-    // public static void main(String[] args){
-    //     spelerPionnen sp = new spelerPionnen(10);
-    //     System.out.println(" begin");
-    //     sp.setgeselecteerdepion("kaas");
-    //     System.out.println(sp.geselecteerdePion);
-    // }
-

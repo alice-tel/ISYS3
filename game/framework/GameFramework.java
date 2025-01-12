@@ -64,7 +64,7 @@ public abstract class GameFramework extends JFrame {
             for (int j = 0; j < columns; j++) {
                 gridButtons[i][j] = new JButton("");
                 gridButtons[i][j].setOpaque(true);
-                gridButtons[i][j].setFont(new Font("Arial", Font.PLAIN, 30));
+                gridButtons[i][j].setFont(new Font("Arial", Font.PLAIN, 20));
                 int finalI = i;
                 int finalJ = j;
                 gridButtons[i][j].addActionListener(e -> onGridButtonClicked(finalI, finalJ));
