@@ -21,14 +21,26 @@ public class Updatebord {
                 if (cell.equals("X")) {
                     StrategoGame.Setgridbutton(row, col, new Color(0, 191, 255));
                 } 
-                if (cell.contains("R")) {
-                    StrategoGame.setBordercolor(row, col, Color.RED);
-                } 
-                if (cell.contains("B")) {
-                    StrategoGame.setBordercolor(row, col, Color.BLUE);
+                if (cell.contains("Q")) {
+                    StrategoGame.Setgridbutton(row, col, Color.BLUE);
+        
+                    // Haal de tekst na "Q" op
+                    String textWithoutQ = cell.substring(cell.indexOf("Q") + 1).trim();
+        
+                    // Zet de tekst op de knop
+                    StrategoGame.setbuttonstext(row, col, textWithoutQ);
+                }
+                if (cell.contains("Z")) {
+                    StrategoGame.Setgridbutton(row, col, Color.RED);
+                    // Haal de tekst na "Q" op
+                    String textWithoutQ = cell.substring(cell.indexOf("Z") + 1).trim();
+        
+                    // Zet de tekst op de knop
+                    StrategoGame.setbuttonstext(row, col, textWithoutQ);
                 } 
                 if (cell.equals("-")) {
                     StrategoGame.Setgridbutton(row, col, new Color(0, 128, 0));
+                    StrategoGame.setbuttonstext(row, col, "");
                 }
             }
         }
