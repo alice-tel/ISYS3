@@ -31,7 +31,7 @@ public class StrategoGame extends GameFramework {
 
 
     public StrategoGame(int size) {
-        super(size, size, 600, 400, "Here should be the rules of Stratego");
+        super(size, size, 1600, 900, "Here should be the rules of Stratego");
 
 
         this.size = size;
@@ -223,6 +223,12 @@ public class StrategoGame extends GameFramework {
                     Duel duel = new Duel(selectedpiece,allePionnen[row][col]);
                     attacker = duel.attackerwin();
                     defender =  duel.defenderwin();
+                    if(attacker && defender){
+                    speler1[row][col] = "-";
+                    speler2[size -row -1][col] = "-";
+                    speler1[originalplacey][originalplacex] = "-" ;
+                    speler2[size -originalplacey - 1][originalplacex] = "-" ;
+                    }
                 }
                 selectedpiece = speler1[row][col];
                 originalplacey = row;
@@ -241,8 +247,21 @@ public class StrategoGame extends GameFramework {
                Duel duel = new Duel(selectedpiece,allePionnen[row][col]);
                attacker = duel.attackerwin();
                defender =  duel.defenderwin();
+               if(attacker && defender){
+                speler2[row][col] = "-";
+                speler1[size -row -1][col] = "-";
+                speler2[originalplacey][originalplacex] = "-" ;
+                speler1[size -originalplacey - 1][originalplacex] = "-" ;
+               }
+                else if(attacker){
+
+                
+                
+                }
                 }
                selectedpiece = speler2[row][col];
+               originalplacey = row;
+               originalplacex = col;
             }
             System.out.println(selectedpiece);
         }
