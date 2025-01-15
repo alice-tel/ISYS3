@@ -8,8 +8,8 @@ import java.net.Socket;
 
 public class StrategoClient implements Runnable {
 
-    //    private String hostName = "127.0.0.1"; // Local server
-    private String hostName = "172.201.112.199"; // Tournament server
+    private String hostName = "127.0.0.1"; // Local server
+//    private String hostName = "172.201.112.199"; // Tournament server
     private int portNumber = 7789;
     private Socket client;
     private BufferedReader in;
@@ -53,7 +53,7 @@ public class StrategoClient implements Runnable {
             waitForLoginResponse();
 
             // Subscribe to the game
-            out.println("subscribe tic-tac-toe"); // Updated game name
+            out.println("subscribe othello"); // Updated game name
 
             String inputMessage;
             while ((inputMessage = in.readLine()) != null) {
