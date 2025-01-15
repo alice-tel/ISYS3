@@ -1,4 +1,4 @@
-package game.games.Stratego;
+package game.games.Stratego.severbullshit;
 
 import java.io.BufferedReader;
 import java.io.IOException;

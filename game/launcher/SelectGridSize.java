@@ -1,6 +1,6 @@
 package game.launcher;
 
-import game.games.Stratego.StrategoGame;
+import game.games.Stratego.severbullshit.StrategoGame;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

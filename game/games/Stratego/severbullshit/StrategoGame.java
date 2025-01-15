@@ -1,7 +1,6 @@
-package game.games.Stratego;
+package game.games.Stratego.severbullshit;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
