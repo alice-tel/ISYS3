@@ -25,10 +25,13 @@ public class StrategoGame extends GameFramework {
     private JPanel pionPanel1;
     private JPanel pionPanel2;
     private boolean Battlephase = false;
+    String selectedpiece = null;
+    private int originalplacey = 0;
+    private int originalplacex = 0;
 
 
     public StrategoGame(int size) {
-        super(size, size, 1600, 900, "Here should be the rules of Stratego");
+        super(size, size, 600, 400, "Here should be the rules of Stratego");
 
 
         this.size = size;
@@ -48,8 +51,8 @@ public class StrategoGame extends GameFramework {
         // System.out.println(currentSelectedPiece);
 
         System.out.println("PLAYER: " + currentGame.getPionnenspeler1());
-        pionPanel1 = currentGame.getPionnenspeler1().getPionPanel(); // JPanel is currently set to only help player1, this needs changing.
-        pionPanel2 = currentGame.getPionnenspeler2().getPionPanel(); // JPanel is currently set to only help player1, this needs changing.
+        pionPanel1 = currentGame.getPionnenspeler1().getPionPanel(); 
+        pionPanel2 = currentGame.getPionnenspeler2().getPionPanel(); 
         add(pionPanel1, BorderLayout.EAST);
         new Updatebord(speler1);
         readyButton();
@@ -153,7 +156,9 @@ public class StrategoGame extends GameFramework {
                     // Place the piece on the grid
                     speler1[row][col] = "Q" + selectedPion1.getNaam(); // Update logical grid
                     speler1[row][col] += " " + pionnen1.getPionwaarde(); // Update logical grid   
-                    speler2[row - size / 2 - 1][col] = "Q"; // Update logical grid
+                    allePionnen[row][col] = "Q" + selectedPion1.getNaam(); // Update logical grid
+                    allePionnen[row][col] += " " + pionnen1.getPionwaarde(); // Update logical grid   
+                    speler2[size -row -1][col] = "Q"; // Update logical grid
                     Setgridbutton(row, col, Color.BLUE);
                     if (selectedPion1.getNaam().equals("Flag") || selectedPion1.getNaam().equals("Bomb")) {
                         // Only show the name without value
@@ -182,7 +187,9 @@ public class StrategoGame extends GameFramework {
                     // Place the piece on the grid
                     speler2[row][col] = "Z" + selectedPion2.getNaam(); // Update logical grid
                     speler2[row][col] += pionnen2.getPionwaarde(); // Update logical grid
-                    speler1[row - size / 2 - 1][col] = "Z";
+                    allePionnen[size -row -1][col] = "Z" + selectedPion2.getNaam(); // Update logical grid
+                    allePionnen[size -row -1][col] += " " + pionnen2.getPionwaarde(); // Update logical grid   
+                    speler1[size -row -1][col] = "Z";
                     Setgridbutton(row, col, Color.RED);
                     if (selectedPion2.getNaam().equals("Flag") || selectedPion2.getNaam().equals("Bomb")) {
                         // Only show the name without value
@@ -200,6 +207,44 @@ public class StrategoGame extends GameFramework {
                     }
                 }
             }
+        }
+        if(Battlephase){
+            boolean	attacker;
+            boolean	defender;
+            if(currentPlayer == 1){
+                if(speler1[row][col] == "-" && selectedpiece.startsWith("Q")){
+                    speler1[row][col] = selectedpiece;
+                    speler2[size -row -1][col] = "Q";
+                    speler1[originalplacey][originalplacex] = "-" ;
+                    speler2[size -originalplacey - 1][originalplacex] = "-" ;
+                    switchPlayer();
+                    }
+                if(speler2[row][col] == "Z" && selectedpiece.startsWith("Q")){
+                    Duel duel = new Duel(selectedpiece,allePionnen[row][col]);
+                    attacker = duel.attackerwin();
+                    defender =  duel.defenderwin();
+                }
+                selectedpiece = speler1[row][col];
+                originalplacey = row;
+                originalplacex = col;
+            }
+            if(currentPlayer == 2){
+                if(speler2[row][col] == "-" && selectedpiece.startsWith("Z")){
+                    speler2[row][col] = selectedpiece;
+                    speler1[size -row -1][col] = "Z";
+                    speler2[originalplacey][originalplacex] = "-" ;
+                    speler1[size -originalplacey - 1][originalplacex] = "-" ;
+                    switchPlayer();
+                }
+
+                if(speler1[row][col] == "Q" && selectedpiece.startsWith("Z")){
+               Duel duel = new Duel(selectedpiece,allePionnen[row][col]);
+               attacker = duel.attackerwin();
+               defender =  duel.defenderwin();
+                }
+               selectedpiece = speler2[row][col];
+            }
+            System.out.println(selectedpiece);
         }
         return;
     }
