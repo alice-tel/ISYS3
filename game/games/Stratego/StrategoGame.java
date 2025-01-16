@@ -2,6 +2,7 @@ package game.games.Stratego;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -25,9 +26,15 @@ public class StrategoGame extends GameFramework {
     private JPanel pionPanel1;
     private JPanel pionPanel2;
     private boolean Battlephase = false;
-    String selectedpiece = null;
+    private String selectedpiece = null;
     private int originalplacey = 0;
     private int originalplacex = 0;
+    private String Red = "Red";
+    private String Blue = "Blue";
+    private String Unoccupied = "-";
+    private String Water = "Water";
+    private boolean player1HasMovablePieces = true;
+    private boolean player2HasMovablePieces = true;
 
 
     public StrategoGame(int size) {
@@ -38,7 +45,7 @@ public class StrategoGame extends GameFramework {
         speler1 = new String[size][size];
         speler2 = new String[size][size];
         allePionnen = new String[size][size];
-        
+
         currentPlayer = 1;
         
 
@@ -81,9 +88,9 @@ public class StrategoGame extends GameFramework {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
                 // Default filling of the grid
-                speler1[row][col] = "-";
-                speler2[row][col] = "-";
-                allePionnen[row][col] = "-";
+                speler1[row][col] = Unoccupied;
+                speler2[row][col] = Unoccupied;
+                allePionnen[row][col] = Unoccupied;
             }
         }
     
@@ -114,9 +121,9 @@ public class StrategoGame extends GameFramework {
         for (int[] position : waterPositions) {
             int row = position[0];
             int col = position[1];
-            allePionnen[row][col] = "X"; // Mark water with 'X'
-            speler1[row][col] = "X";
-            speler2[row][col] = "X";
+            allePionnen[row][col] = Water; // Mark water with 'X'
+            speler1[row][col] = Water;
+            speler2[row][col] = Water;
             gridButtons[row][col].setBorderPainted(false); 
         }
     }
@@ -150,15 +157,15 @@ public class StrategoGame extends GameFramework {
                         return;
                     }
 
-                    if (speler1[row][col] != "-") {
+                    if (speler1[row][col] != Unoccupied) {
                         return;
                     }
                     // Place the piece on the grid
-                    speler1[row][col] = "Q" + selectedPion1.getNaam(); // Update logical grid
+                    speler1[row][col] = Blue + " "+ selectedPion1.getNaam(); // Update logical grid
                     speler1[row][col] += " " + pionnen1.getPionwaarde(); // Update logical grid   
-                    allePionnen[row][col] = "Q" + selectedPion1.getNaam(); // Update logical grid
+                    allePionnen[row][col] = Blue + " " + selectedPion1.getNaam(); // Update logical grid
                     allePionnen[row][col] += " " + pionnen1.getPionwaarde(); // Update logical grid   
-                    speler2[size -row -1][col] = "Q"; // Update logical grid
+                    speler2[size -row -1][col] = Blue; // Update logical grid
                     Setgridbutton(row, col, Color.BLUE);
                     if (selectedPion1.getNaam().equals("Flag") || selectedPion1.getNaam().equals("Bomb")) {
                         // Only show the name without value
@@ -181,15 +188,15 @@ public class StrategoGame extends GameFramework {
                         return;
                     }
 
-                    if (speler2[row][col] != "-") {
+                    if (speler2[row][col] != Unoccupied) {
                         return;
                     }
                     // Place the piece on the grid
-                    speler2[row][col] = "Z" + selectedPion2.getNaam(); // Update logical grid
-                    speler2[row][col] += pionnen2.getPionwaarde(); // Update logical grid
-                    allePionnen[size -row -1][col] = "Z" + selectedPion2.getNaam(); // Update logical grid
+                    speler2[row][col] = Red + " " + selectedPion2.getNaam(); // Update logical grid
+                    speler2[row][col] += " " +pionnen2.getPionwaarde(); // Update logical grid
+                    allePionnen[size -row -1][col] = Red + " " + selectedPion2.getNaam(); // Update logical grid
                     allePionnen[size -row -1][col] += " " + pionnen2.getPionwaarde(); // Update logical grid   
-                    speler1[size -row -1][col] = "Z";
+                    speler1[size -row -1][col] = Red;
                     Setgridbutton(row, col, Color.RED);
                     if (selectedPion2.getNaam().equals("Flag") || selectedPion2.getNaam().equals("Bomb")) {
                         // Only show the name without value
@@ -211,62 +218,165 @@ public class StrategoGame extends GameFramework {
         if(Battlephase){
             boolean	attacker;
             boolean	defender;
+            String[][] CurrentGrid = null;
+            String[][] OtherGrid = null;
+            String currentpiece = null;
+            String Opponentpiece = null;
+
             if(currentPlayer == 1){
-                if(speler1[row][col] == "-" && selectedpiece.startsWith("Q")){
-                    speler1[row][col] = selectedpiece;
-                    speler2[size -row -1][col] = "Q";
-                    speler1[originalplacey][originalplacex] = "-" ;
-                    speler2[size -originalplacey - 1][originalplacex] = "-" ;
+                CurrentGrid = speler1;
+                OtherGrid = speler2;
+                currentpiece = Blue;
+                Opponentpiece = Red;
+                if (!player1HasMovablePieces){
                     switchPlayer();
-                    }
-                if(speler2[row][col] == "Z" && selectedpiece.startsWith("Q")){
-                    Duel duel = new Duel(selectedpiece,allePionnen[row][col]);
-                    attacker = duel.attackerwin();
-                    defender =  duel.defenderwin();
-                    if(attacker && defender){
-                    speler1[row][col] = "-";
-                    speler2[size -row -1][col] = "-";
-                    speler1[originalplacey][originalplacex] = "-" ;
-                    speler2[size -originalplacey - 1][originalplacex] = "-" ;
-                    }
                 }
-                selectedpiece = speler1[row][col];
-                originalplacey = row;
-                originalplacex = col;
             }
             if(currentPlayer == 2){
-                if(speler2[row][col] == "-" && selectedpiece.startsWith("Z")){
-                    speler2[row][col] = selectedpiece;
-                    speler1[size -row -1][col] = "Z";
-                    speler2[originalplacey][originalplacex] = "-" ;
-                    speler1[size -originalplacey - 1][originalplacex] = "-" ;
+                CurrentGrid = speler2; 
+                OtherGrid = speler1;
+                currentpiece = Red;
+                Opponentpiece = Blue;
+                if (!player2HasMovablePieces){
                     switchPlayer();
                 }
-
-                if(speler1[row][col] == "Q" && selectedpiece.startsWith("Z")){
-               Duel duel = new Duel(selectedpiece,allePionnen[row][col]);
-               attacker = duel.attackerwin();
-               defender =  duel.defenderwin();
-               if(attacker && defender){
-                speler2[row][col] = "-";
-                speler1[size -row -1][col] = "-";
-                speler2[originalplacey][originalplacex] = "-" ;
-                speler1[size -originalplacey - 1][originalplacex] = "-" ;
-               }
-                else if(attacker){
-
-                
-                
-                }
-                }
-               selectedpiece = speler2[row][col];
-               originalplacey = row;
-               originalplacex = col;
             }
-            System.out.println(selectedpiece);
+            if (CurrentGrid[row][col] == Water){
+                return;
+            }
+                if(selectedpiece != null && selectedpiece.startsWith(currentpiece)){
+                    if(isValidMove(originalplacey, originalplacex, row , col ,selectedpiece)){
+                if(CurrentGrid[row][col] == Unoccupied){
+                    CurrentGrid[row][col] = selectedpiece;
+                    OtherGrid[size -row -1][col] = currentpiece;
+                    CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
+                    OtherGrid[size -originalplacey - 1][originalplacex] = Unoccupied ;
+                    }
+                if(CurrentGrid[row][col] == Opponentpiece){
+                    System.out.println(OtherGrid[size -row -1][col]);
+                    Duel duel = new Duel(selectedpiece,OtherGrid[size -row -1][col]);
+                    attacker = duel.attackerwin();
+                    defender =  duel.defenderwin();
+                    if(!attacker && !defender){
+                    OtherGrid[row][col] = Unoccupied;
+                    CurrentGrid[size -row -1][col] = Unoccupied;
+                    OtherGrid[originalplacey][originalplacex] = Unoccupied ;
+                    CurrentGrid[size -originalplacey - 1][originalplacex] = Unoccupied ;
+                    if(Checkforwin(currentPlayer)){
+                        Battlephase = false;
+                        return;
+                    }
+                }
+                    else if(attacker){
+                        CurrentGrid[row][col] = Unoccupied;
+                        OtherGrid[size -row -1][col] = selectedpiece;
+                        CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
+                        OtherGrid[size -originalplacey - 1][originalplacex] = selectedpiece;
+                        if(Checkforwin(currentPlayer)){
+                            Battlephase = false;
+                            return;
+                        }
+                    }
+                    else if(defender){
+                        OtherGrid[row][col] = selectedpiece;
+                        CurrentGrid[size -row -1][col] = Unoccupied;
+                        OtherGrid[originalplacey][originalplacex] = selectedpiece ;
+                        CurrentGrid[size -originalplacey - 1][originalplacex] = Unoccupied;
+                    }
+                    
+                
+                }
+                switchPlayer();
+            }
+            
         }
+        selectedpiece = CurrentGrid[row][col];
+        originalplacey = row;
+        originalplacex = col;
+        System.out.println(selectedpiece);
+    }
+    
         return;
     }
+    public boolean Checkforwin(int currentPlayer){
+        int flagcount = 0;
+        player1HasMovablePieces = false;
+        player2HasMovablePieces = false;
+        if(currentPlayer == 1){
+            for (int row = 0; row < size; row++) {
+                for (int col = 0; col < size; col++) {
+                    if(speler2[row][col].contains("Flag")){
+                        flagcount++;
+                    }
+                    if (!speler1[row][col].contains("Flag") && !speler1[row][col].contains("Bomb") && !speler1[row][col].equals(Unoccupied)) {
+                        player1HasMovablePieces = true;
+                    }
+                    if (!speler2[row][col].contains("Flag") && !speler2[row][col].contains("Bomb") && !speler2[row][col].equals(Unoccupied)) {
+                        player2HasMovablePieces = true;
+                    }
+                }
+            }
+            if(flagcount == 0){
+                statusLabel.setText("Player " + currentPlayer + " has won the game");
+                return true;
+            }
+        }
+        if(currentPlayer == 2){
+            for (int row = 0; row < size; row++) {
+                for (int col = 0; col < size; col++) {
+                    if(speler1[row][col].contains("Flag")){
+                        flagcount++;
+                    }
+                    if (!speler2[row][col].contains("Flag") && !speler2[row][col].contains("Bomb") && !speler2[row][col].equals(Unoccupied)) {
+                        player2HasMovablePieces = true;
+                    }
+                    if (!speler1[row][col].contains("Flag") && !speler1[row][col].contains("Bomb") && !speler1[row][col].equals(Unoccupied)) {
+                        player1HasMovablePieces = true;
+                    }
+                }
+            }
+            if(flagcount == 0){
+                statusLabel.setText("Player " + currentPlayer + " has won the game");
+                return true;
+            }
+           
+        }
+        if (!player1HasMovablePieces && !player2HasMovablePieces) {
+            statusLabel.setText("The game is a tie!");
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isValidMove(int originalPlaceY, int originalPlaceX, int row, int col, String selectedPiece) {
+        int move = 1;
+    
+        // Speciale bewegingen voor bepaalde stukken
+        if (selectedPiece.contains("Flag") || selectedPiece.contains("Bomb")) {
+            move = 0; // Deze stukken kunnen niet bewegen
+        }
+        if (selectedPiece.contains("Scout")) {
+            move = size; // "Scout" kan meerdere vakken bewegen
+        }
+        ArrayList<int[]> validMoves = new ArrayList<>();
+        for(int i = 0; i < move; i++){
+        validMoves.add(new int[] {originalPlaceY + i, originalPlaceX}); // Naar beneden
+        validMoves.add(new int[] {originalPlaceY - i, originalPlaceX}); // Naar boven
+        validMoves.add(new int[] {originalPlaceY, originalPlaceX + i}); // Naar rechts
+        validMoves.add(new int[] {originalPlaceY, originalPlaceX - i}); // Naar links
+        }
+        // Controleer of de doelpositie in de lijst van geldige zetten zit
+        for (int[] validMove : validMoves) {
+            if (validMove[0] == row && validMove[1] == col) {
+                return true; // Zet is geldig
+            }
+        }
+    
+        return false; // Zet is niet geldig
+    }
+
+    
+
 
     public void handleReadyButton() {
         if (currentPlayer == 2) {

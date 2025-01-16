@@ -18,6 +18,7 @@ public class Duel{
         String[] partsdeffender = deffender.split(" ");
         intattacker = Integer.parseInt(partsattacker[2]);
         intdeffender = Integer.parseInt(partsdeffender[2]);
+        
     }
 
     public  Boolean attackerwin(){
