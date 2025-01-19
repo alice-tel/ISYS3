@@ -26,6 +26,8 @@ public class StrategoClient implements Runnable {
     }
 
     public StrategoClient() {
+      StrategoAiStartup  ai = new StrategoAiStartup(8); //
+//      ai.aiStartupPhase();
         this.playerName = playerName;
         board = new char[10];
     }
