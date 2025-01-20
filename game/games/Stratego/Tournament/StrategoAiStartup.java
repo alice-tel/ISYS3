@@ -1,4 +1,4 @@
-package game.games.Stratego.severbullshit;
+package game.games.Stratego.Tournament;
 import game.games.Stratego.Pion.Pion;
 import game.games.Stratego.Pion.spelerPionnen;
 import java.util.ArrayList;
