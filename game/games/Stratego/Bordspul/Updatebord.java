@@ -1,7 +1,7 @@
 package game.games.Stratego.Bordspul;
 
 import java.awt.Color;
-import game.games.Stratego.severbullshit.StrategoGame;
+import game.games.Stratego.Tournament.StrategoGame;
 
 public class Updatebord {
 

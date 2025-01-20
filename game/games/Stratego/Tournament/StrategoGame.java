@@ -1,4 +1,4 @@
-package game.games.Stratego.severbullshit;
+package game.games.Stratego.Tournament;
 
 import java.awt.*;
 
