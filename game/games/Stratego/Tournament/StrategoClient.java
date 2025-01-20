@@ -1,4 +1,6 @@
-package game.games.Stratego.severbullshit;
+package game.games.Stratego.Tournament;
+
+import game.games.Stratego.Tournament.StrategoAiStartup;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,7 +28,7 @@ public class StrategoClient implements Runnable {
     }
 
     public StrategoClient() {
-      StrategoAiStartup  ai = new StrategoAiStartup(8); //
+      StrategoAiStartup ai = new StrategoAiStartup(8); //
 //      ai.aiStartupPhase();
         this.playerName = playerName;
         board = new char[10];
