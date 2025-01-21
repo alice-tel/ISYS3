@@ -1,38 +1,25 @@
 package game.games.Stratego.Tournament;
 
-import game.games.Stratego.Tournament.StrategoAiStartup;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class StrategoClient implements Runnable {
 
-    private String hostName = "127.0.0.1"; // Local server
-//    private String hostName = "172.201.112.199"; // Tournament server
+    private String hostName = "127.0.0.1";
     private int portNumber = 7789;
+
     private Socket client;
     private BufferedReader in;
     private PrintWriter out;
     private boolean done;
-    private char[] board; // 3x3 board
-    private String playerName;
-    private char playerSymbol; // 'X' or 'O'
-    private char opponentSymbol; // 'X' or 'O'
 
-    public static void main(String[] args) {
-        game.games.tictactoe.TicTacToeClient client = new game.games.tictactoe.TicTacToeClient();
-        client.run();
-    }
+    private boolean placed = false;
+    private boolean active = false;
 
-    public StrategoClient() {
-      StrategoAiStartup ai = new StrategoAiStartup(8); //
-//      ai.aiStartupPhase();
-        this.playerName = playerName;
-        board = new char[10];
-    }
+    private String[][] board = new String[8][8]; // 8x8 board
+    private final int MAX_DEPTH = 3; // Depth for Expectiminimax algorithm
 
     @Override
     public void run() {
@@ -41,116 +28,208 @@ public class StrategoClient implements Runnable {
             out = new PrintWriter(client.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-            // Prompt for a valid player name
-            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-            System.out.print("Enter your player name (alphanumeric, max 16 characters, can't start with a number): ");
-            playerName = consoleReader.readLine();
+            // Get the user's name
+            String userName = getUserName();
 
-            // Validate player name
-            while (!isValidName(playerName)) {
-                System.out.print("Invalid name! Please enter a valid player name: ");
-                playerName = consoleReader.readLine();
-            }
-
-            // Log in as the player
-            out.println("login " + playerName);
-            waitForLoginResponse();
-
-            // Subscribe to the game
-            out.println("subscribe othello"); // Updated game name
+            out.println("login " + userName + LocalDateTime.now().getSecond() + LocalDateTime.now().getNano());
+            out.println("subscribe stratego");
 
             String inputMessage;
             while ((inputMessage = in.readLine()) != null) {
+                if (inputMessage.contains("MATCH")) {
+                    placed = false;
+                    active = true;
+                    initializeBoard();
+                } else if (inputMessage.contains("LOSS") || inputMessage.contains("WIN")) {
+                    active = false;
+                    // After the game ends, resubscribe
+                    System.out.println("Game ended, resubscribing...");
+                    out.println("subscribe stratego");
+                } else if (inputMessage.contains("YOURTURN") && active) {
+                    if (!placed) {
+                        placed = true;
+                        placePieces();
+                    } else {
+                        calculateAndMakeMove();
+                    }
+                }
                 System.out.println(inputMessage);
-                handleServerMessage(inputMessage);
             }
         } catch (IOException e) {
             e.printStackTrace();
-            shutdown();
         }
     }
 
-    private boolean isValidName(String name) {
-        // Check name constraints: alphanumeric, not starting with a number, max 16 characters
-        return name.matches("^[a-zA-Z][a-zA-Z0-9]{0,15}$");
+    private String getUserName() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter your name: ");
+        return scanner.nextLine();
     }
 
-    private void waitForLoginResponse() throws IOException {
-        String response;
-        while ((response = in.readLine()) != null) {
-            System.out.println(response);
-            if (response.startsWith("OK")) {
-                System.out.println("Login successful.");
-                break; // Login successful
-            } else if (response.startsWith("ERR")) {
-                System.out.println("Error: " + response);
-                System.out.print("Enter a new player name: ");
-                BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-                playerName = consoleReader.readLine();
-                out.println("login " + playerName); // Try logging in again
+
+    private void initializeBoard() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                board[i][j] = "."; // Empty cell
             }
         }
     }
 
-    private void handleServerMessage(String message) {
-        if (message.startsWith("SVR GAME MATCH")) {
-            System.out.println("Game match found! Starting the game...");
-            playerSymbol = 'X'; // Assuming player is X
-            opponentSymbol = 'O'; // Set the opponent's symbol
-            board = new char[9]; // Reset the board for a new game
-            printBoard();
-        } else if (message.startsWith("SVR GAME YOURTURN")) {
-            System.out.println("It's your turn! The computer will now make a move.");
-            makeComputerMove(); // Computer makes a move
-        } else if (message.startsWith("SVR GAME LOSS")) {
-            System.out.println("You lost the game!");
-            printBoard();
-            //shutdown();
-        } else if (message.startsWith("SVR GAME DRAW")) {
-            System.out.println("The game is a draw!");
-            printBoard();
-            //shutdown();
-        } else if (message.startsWith("SVR GAME MOVE")) {
-            try {
-                // Extract the move using regex
-                String movePattern = "MOVE: \"(\\d+)\"";
-                java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(movePattern);
-                java.util.regex.Matcher matcher = pattern.matcher(message);
+    private void placePieces() {
+        // Placing the 10 specified pieces using index (1-64)
+        placePiece(44, "Marshal");
+        placePiece(45, "General");
+        placePiece(54, "Miner");
+        placePiece(55, "Miner");
+        placePiece(51, "Scout");
+        placePiece(52, "Scout");
+        placePiece(49, "Spy");
+        placePiece(56, "Bomb");
+        placePiece(57, "Bomb");
+        placePiece(58, "Flag");
 
-                if (matcher.find()) {
-                    int move = Integer.parseInt(matcher.group(1)); // Get the move from the regex matcher
+        printBoard();
+    }
 
-                    // Update the board with the opponent's move if the spot is available
-                    if (move >= 0 && move < 9) {
-                        if (board[move] == '\0') { // Check if the spot is available
-                            board[move] = opponentSymbol; // Update the board with opponent's move
-                        } else {
-                            System.out.println("Received an invalid move from the server: " + move);
-                        }
-                    } else {
-                        System.out.println("Move out of bounds: " + move);
-                    }
-                } else {
-                    System.out.println("Unexpected message format for MOVE: " + message);
+    private void placePiece(int index, String piece) {
+        out.println("place " + index + " " + piece);
+    }
+
+    private void calculateAndMakeMove() {
+        // Generate all valid moves for the current board
+        List<int[]> validMoves = generateValidMoves(board);
+
+        if (validMoves.isEmpty()) {
+            System.out.println("No valid moves available.");
+            return;
+        }
+
+        // Pick a random valid move
+        int[] randomMove = validMoves.get(new Random().nextInt(validMoves.size()));
+        int from = randomMove[0];
+        int to = randomMove[1];
+
+        int fromIndex = from;
+        int toIndex = to;
+
+        int fromRow = from / 8, fromCol = from % 8;
+        int toRow = to / 8, toCol = to % 8;
+
+        String movingPiece = board[fromRow][fromCol];
+        board[fromRow][fromCol] = "."; // Empty the source cell
+        board[toRow][toCol] = movingPiece; // Place the piece in the destination cell
+
+        // Send the move to the server
+        out.println("move " + fromIndex + " " + toIndex);
+
+        // Print the updated board state
+        printBoard();
+    }
+
+
+
+    private List<int[]> generateValidMoves(String[][] currentBoard) {
+        List<int[]> validMoves = new ArrayList<>();
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                if (!currentBoard[row][col].equals(".")) { // Ignore empty spaces
+                    validMoves.addAll(getValidMovesForPiece(row, col, currentBoard[row][col], currentBoard));
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid move format received from the server.");
             }
-
-            printBoard(); // Print the updated board after the move
         }
+        return validMoves;
     }
 
-    private void makeComputerMove() {}
+    private List<int[]> getValidMovesForPiece(int row, int col, String piece, String[][] board) {
+        List<int[]> moves = new ArrayList<>();
 
-    private void printBoard() {}
+        // Move directions: up, down, left, right
+        int[] directions = {-1, 1}; // Up and Down for vertical, Left and Right for horizontal
+
+        if (piece.equals("Scout")) {
+            // Scout can move any number of spaces in any direction (without jumping over other pieces)
+            for (int direction : directions) {
+                for (int i = 1; i < 8; i++) { // Moving multiple steps
+                    // Vertical moves
+                    if (row + direction * i >= 0 && row + direction * i < 8 && board[row + direction * i][col].equals(".")) {
+                        moves.add(new int[]{row * 8 + col, (row + direction * i) * 8 + col});
+                    } else break; // Stop if obstacle is encountered
+                    // Horizontal moves
+                    if (col + direction * i >= 0 && col + direction * i < 8 && board[row][col + direction * i].equals(".")) {
+                        moves.add(new int[]{row * 8 + col, row * 8 + (col + direction * i)});
+                    } else break; // Stop if obstacle is encountered
+                }
+            }
+        } else if (piece.equals("Miner") || piece.equals("Spy")) {
+            // Miner can move 1 space in any direction
+            for (int direction : directions) {
+                // Vertical moves
+                if (row + direction >= 0 && row + direction < 8 && board[row + direction][col].equals(".")) {
+                    moves.add(new int[]{row * 8 + col, (row + direction) * 8 + col});
+                }
+                // Horizontal moves
+                if (col + direction >= 0 && col + direction < 8 && board[row][col + direction].equals(".")) {
+                    moves.add(new int[]{row * 8 + col, row * 8 + (col + direction)});
+                }
+            }
+        }
+
+        // Additional logic for other pieces like Bomb, Flag, still needs to be added, I think. I don't know if this is necessary or if I'm overcomplicating it.
+        return moves;
+    }
+
+
+
+
+
+    private String[][] simulateMove(String[][] currentBoard, int from, int to) {
+        String[][] newBoard = new String[8][8];
+        for (int i = 0; i < 8; i++) {
+            System.arraycopy(currentBoard[i], 0, newBoard[i], 0, 8);
+        }
+        int fromRow = from / 8, fromCol = from % 8;
+        int toRow = to / 8, toCol = to % 8;
+
+        newBoard[toRow][toCol] = newBoard[fromRow][fromCol];
+        newBoard[fromRow][fromCol] = ".";
+        return newBoard;
+    }
+
+    private int evaluateBoard(String[][] board) {
+        // Basic evaluation of pieces
+        int score = 0;
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                String piece = board[row][col];
+                if (piece.equals("Marshal")) score += 10;
+                else if (piece.equals("General")) score += 8;
+                else if (piece.equals("Flag")) score -= 50; // Flag loss
+            }
+        }
+        return score;
+    }
+
+    private boolean isGameOver(String[][] board) {
+        // Check if the game is over (simplified check for testing purposes)
+        return false;
+    }
+
+    private void printBoard() {
+        System.out.println("Current Board State:");
+        for (String[] row : board) {
+            for (String cell : row) {
+                System.out.print(cell + " ");
+            }
+            System.out.println();
+        }
+    }
 
     public void shutdown() {
         done = true;
         try {
-            if (in != null) in.close();
-            if (out != null) out.close();
-            if (client != null && !client.isClosed()) {
+            in.close();
+            out.close();
+            if (!client.isClosed()) {
                 client.close();
             }
         } catch (IOException e) {
@@ -158,4 +237,28 @@ public class StrategoClient implements Runnable {
         }
     }
 
+    class InputHandler implements Runnable {
+        @Override
+        public void run() {
+            try {
+                BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
+                while (!done) {
+                    String message = inputReader.readLine();
+                    if (message.equalsIgnoreCase("/quit")) {
+                        inputReader.close();
+                        shutdown();
+                    } else {
+                        out.println(message);
+                    }
+                }
+            } catch (IOException e) {
+                shutdown();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        StrategoClient client = new StrategoClient();
+        client.run();
+    }
 }
