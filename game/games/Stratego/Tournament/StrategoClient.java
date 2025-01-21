@@ -65,8 +65,7 @@ public class StrategoClient implements Runnable {
         System.out.print("Enter your name: ");
         return scanner.nextLine();
     }
-
-
+    
     private void initializeBoard() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -75,21 +74,35 @@ public class StrategoClient implements Runnable {
         }
     }
 
-    private void placePieces() {
-        // Placing the 10 specified pieces using index (1-64)
-        placePiece(44, "Marshal");
-        placePiece(45, "General");
-        placePiece(54, "Miner");
-        placePiece(55, "Miner");
-        placePiece(51, "Scout");
-        placePiece(52, "Scout");
-        placePiece(49, "Spy");
-        placePiece(56, "Bomb");
-        placePiece(57, "Bomb");
-        placePiece(58, "Flag");
 
-        printBoard();
+    private void placePieces() {
+        List<String> pieces = new ArrayList<>(Arrays.asList(
+                "Marshal", "General", "Miner", "Miner", "Scout", "Scout", "Spy", "Bomb", "Bomb", "Flag"
+        ));
+
+        Collections.shuffle(pieces);  // Randomize the piece list
+
+        // Now place the pieces at random positions on the bottom three rows
+        int[] positions = getRandomPositions(pieces.size());
+
+        for (int i = 0; i < pieces.size(); i++) {
+            placePiece(positions[i], pieces.get(i));
+        }
+
     }
+
+    private int[] getRandomPositions(int count) {
+        Set<Integer> positions = new HashSet<>();
+        Random rand = new Random();
+        while (positions.size() < count) {
+            int row = rand.nextInt(3) + 5;  // Random row between 5 and 7
+            int col = rand.nextInt(8);      // Random column between 0 and 7
+            int position = row * 8 + col;   // Convert (row, col) to a 1D position
+            positions.add(position);
+        }
+        return positions.stream().mapToInt(Integer::intValue).toArray();
+    }
+
 
     private void placePiece(int index, String piece) {
         out.println("place " + index + " " + piece);
@@ -122,11 +135,7 @@ public class StrategoClient implements Runnable {
         // Send the move to the server
         out.println("move " + fromIndex + " " + toIndex);
 
-        // Print the updated board state
-        printBoard();
     }
-
-
 
     private List<int[]> generateValidMoves(String[][] currentBoard) {
         List<int[]> validMoves = new ArrayList<>();
@@ -178,10 +187,6 @@ public class StrategoClient implements Runnable {
         return moves;
     }
 
-
-
-
-
     private String[][] simulateMove(String[][] currentBoard, int from, int to) {
         String[][] newBoard = new String[8][8];
         for (int i = 0; i < 8; i++) {
@@ -209,20 +214,6 @@ public class StrategoClient implements Runnable {
         return score;
     }
 
-    private boolean isGameOver(String[][] board) {
-        // Check if the game is over (simplified check for testing purposes)
-        return false;
-    }
-
-    private void printBoard() {
-        System.out.println("Current Board State:");
-        for (String[] row : board) {
-            for (String cell : row) {
-                System.out.print(cell + " ");
-            }
-            System.out.println();
-        }
-    }
 
     public void shutdown() {
         done = true;
