@@ -290,7 +290,7 @@ public class StrategoGame extends GameFramework {
                    speler2 = CurrentGrid; 
                    speler1 = OtherGrid;
                 }
-                if(Checkforwin(currentPlayer)){
+                if(Checkforwin()){
                     Battlephase = false;
                     return;
                 }
@@ -320,20 +320,22 @@ private void printGrid(String[][] grid) {
 
 
     
-    public boolean Checkforwin(int currentPlayer){
+    public boolean Checkforwin(){
         int flagcount = 0;
         player1HasMovablePieces = false;
         player2HasMovablePieces = false;
+        String Opponentpiece = (currentPlayer == 1) ? Red : Blue;
+        String currentPiece = (currentPlayer == 1) ? Blue : Red;
         if(currentPlayer == 1){
             for (int row = 0; row < size; row++) {
                 for (int col = 0; col < size; col++) {
                     if(speler2[row][col].contains("Flag")){
                         flagcount++;
                     }
-                    if (!speler1[row][col].contains("Flag") && !speler1[row][col].contains("Bomb") && !speler1[row][col].equals(Unoccupied)) {
+                    if (!speler1[row][col].contains("Flag") && !speler1[row][col].contains("Bomb") && !speler1[row][col].equals(Unoccupied)&& !speler1[row][col].equals(Opponentpiece)&& !speler1[row][col].equals(Water)) {
                         player1HasMovablePieces = true;
                     }
-                    if (!speler2[row][col].contains("Flag") && !speler2[row][col].contains("Bomb") && !speler2[row][col].equals(Unoccupied)) {
+                    if (!speler2[row][col].contains("Flag") && !speler2[row][col].contains("Bomb") && !speler2[row][col].equals(Unoccupied)&& !speler2[row][col].equals(currentPiece)&& !speler2[row][col].equals(Water)) {
                         player2HasMovablePieces = true;
                     }
                 }
@@ -349,10 +351,10 @@ private void printGrid(String[][] grid) {
                     if(speler1[row][col].contains("Flag")){
                         flagcount++;
                     }
-                    if (!speler2[row][col].contains("Flag") && !speler2[row][col].contains("Bomb") && !speler2[row][col].equals(Unoccupied)) {
+                    if (!speler2[row][col].contains("Flag") && !speler2[row][col].contains("Bomb") && !speler2[row][col].equals(Unoccupied)&& !speler2[row][col].equals(Opponentpiece)&& !speler2[row][col].equals(Water)) {
                         player2HasMovablePieces = true;
                     }
-                    if (!speler1[row][col].contains("Flag") && !speler1[row][col].contains("Bomb") && !speler1[row][col].equals(Unoccupied)) {
+                    if (!speler1[row][col].contains("Flag") && !speler1[row][col].contains("Bomb") && !speler1[row][col].equals(Unoccupied)&& !speler1[row][col].equals(currentPiece)&& !speler1[row][col].equals(Water)) {
                         player1HasMovablePieces = true;
                     }
                 }
@@ -367,6 +369,8 @@ private void printGrid(String[][] grid) {
             statusLabel.setText("The game is a tie!");
             return true;
         }
+        System.out.println(player1HasMovablePieces);
+        System.out.println(player2HasMovablePieces);
         return false;
     }
 
