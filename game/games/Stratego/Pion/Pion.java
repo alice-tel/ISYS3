@@ -6,14 +6,22 @@ import game.games.Stratego.Strategys.IMoveStrategy;
 public class Pion {
     private String naam;
     private int waarde;
+    private int aantal;
     private IMoveStrategy moveStrategy;
     private IAttackStrategy attackStrategy;
 
-    public Pion(String naam, int waarde, IMoveStrategy moveStrategy, IAttackStrategy attackStrategy){
+    public Pion(String naam, int waarde,int aantal, IMoveStrategy moveStrategy, IAttackStrategy attackStrategy){
         this.naam = naam;
         this.waarde = waarde;
+        this.aantal = aantal;
         this.moveStrategy = moveStrategy;
         this.attackStrategy = attackStrategy;
+    }
+    public int getWaarde(){
+        return waarde;
+    }
+    public int getAantal(){
+        return aantal;
     }
     public void getMove(){
         moveStrategy.move();

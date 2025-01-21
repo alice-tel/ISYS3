@@ -3,6 +3,7 @@ package game.games.Stratego;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -63,6 +64,7 @@ public class StrategoGame extends GameFramework {
         add(pionPanel1, BorderLayout.EAST);
         new Updatebord(speler1);
         readyButton();
+        addButtonToPionPanel();
     }
 
     private void switchPlayer() {
@@ -72,7 +74,6 @@ public class StrategoGame extends GameFramework {
         new Updatebord(currentPlayer == 1 ? speler1 : speler2);
 
         // Update the UI and status
-        statusLabel.setText("Player " + currentPlayer + "'s turn");
     
         // Update the panel with pieces
         if (!Battlephase) {
@@ -218,6 +219,7 @@ public class StrategoGame extends GameFramework {
         if(Battlephase){
             boolean	attacker;
             boolean	defender;
+            int otherplayer = (currentPlayer == 1) ? 2 : 1;
             String[][] CurrentGrid = null;
             String[][] OtherGrid = null;
             String currentpiece = null;
@@ -258,33 +260,39 @@ public class StrategoGame extends GameFramework {
                     attacker = duel.attackerwin();
                     defender =  duel.defenderwin();
                     if(!attacker && !defender){
-                    OtherGrid[row][col] = Unoccupied;
-                    CurrentGrid[size -row -1][col] = Unoccupied;
-                    OtherGrid[originalplacey][originalplacex] = Unoccupied ;
-                    CurrentGrid[size -originalplacey - 1][originalplacex] = Unoccupied ;
-                    if(Checkforwin(currentPlayer)){
-                        Battlephase = false;
-                        return;
+                    CurrentGrid[row][col] = Unoccupied;
+                    OtherGrid[size -row -1][col] = Unoccupied;
+                    CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
+                    OtherGrid[size -originalplacey - 1][originalplacex] = Unoccupied ;
+                    statusLabel.setText("Both pieces are removed from the board");
+                    }
+                
+                if(attacker){
+                    statusLabel.setText("Player " + currentPlayer + " "+ selectedpiece + " has won the duel from " + OtherGrid[size -row - 1][col]);
+                        CurrentGrid[row][col] = selectedpiece;
+                        OtherGrid[size -row -1][col] = currentpiece;
+                        CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
+                        OtherGrid[size -originalplacey - 1][originalplacex] = Unoccupied;
+                    }
+                if(defender){
+                    statusLabel.setText("Player " + otherplayer + " " + OtherGrid[size -row - 1][col] + " has won the duel from " + selectedpiece);
+                        CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
+                        OtherGrid[size -originalplacey - 1][originalplacex] = Unoccupied;
                     }
                 }
-                    else if(attacker){
-                        CurrentGrid[row][col] = Unoccupied;
-                        OtherGrid[size -row -1][col] = selectedpiece;
-                        CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
-                        OtherGrid[size -originalplacey - 1][originalplacex] = selectedpiece;
-                        if(Checkforwin(currentPlayer)){
-                            Battlephase = false;
-                            return;
-                        }
-                    }
-                    else if(defender){
-                        OtherGrid[row][col] = selectedpiece;
-                        CurrentGrid[size -row -1][col] = Unoccupied;
-                        OtherGrid[originalplacey][originalplacex] = selectedpiece ;
-                        CurrentGrid[size -originalplacey - 1][originalplacex] = Unoccupied;
-                    }
-                    
-                
+                printGrid(CurrentGrid);
+                printGrid(OtherGrid);
+                if(currentPlayer == 1){
+                    speler1 = CurrentGrid;
+                    speler2 = OtherGrid;
+                }
+                if(currentPlayer == 2){
+                   speler2 = CurrentGrid; 
+                   speler1 = OtherGrid;
+                }
+                if(Checkforwin(currentPlayer)){
+                    Battlephase = false;
+                    return;
                 }
                 switchPlayer();
             }
@@ -298,6 +306,20 @@ public class StrategoGame extends GameFramework {
     
         return;
     }
+
+
+// Helper function to print a single grid
+private void printGrid(String[][] grid) {
+    for (int i = 0; i < grid.length; i++) {
+        for (int j = 0; j < grid[i].length; j++) {
+            System.out.print(grid[i][j] + " ");
+        }
+        System.out.println();
+    }
+}
+
+
+    
     public boolean Checkforwin(int currentPlayer){
         int flagcount = 0;
         player1HasMovablePieces = false;
@@ -350,34 +372,71 @@ public class StrategoGame extends GameFramework {
 
     public boolean isValidMove(int originalPlaceY, int originalPlaceX, int row, int col, String selectedPiece) {
         int move = 1;
+        String[][] currentBoard = (currentPlayer == 1) ? speler1 : speler2;
+        String currentPiece = (currentPlayer == 1) ? Blue : Red;
+        String opponentPiece = (currentPlayer == 1) ? Red : Blue;
     
-        // Speciale bewegingen voor bepaalde stukken
+        // Special moves for certain pieces
         if (selectedPiece.contains("Flag") || selectedPiece.contains("Bomb")) {
-            move = 0; // Deze stukken kunnen niet bewegen
+            return false; // These pieces cannot move
         }
         if (selectedPiece.contains("Scout")) {
-            move = size; // "Scout" kan meerdere vakken bewegen
+            move = size - 1; // "Scout" can move multiple squares
         }
+    
+        // Collect valid moves
         ArrayList<int[]> validMoves = new ArrayList<>();
-        for(int i = 0; i < move; i++){
-        validMoves.add(new int[] {originalPlaceY + i, originalPlaceX}); // Naar beneden
-        validMoves.add(new int[] {originalPlaceY - i, originalPlaceX}); // Naar boven
-        validMoves.add(new int[] {originalPlaceY, originalPlaceX + i}); // Naar rechts
-        validMoves.add(new int[] {originalPlaceY, originalPlaceX - i}); // Naar links
+    
+        // Move down
+        for (int i = 1; i <= move; i++) {
+            if (originalPlaceY + i >= size || currentBoard[originalPlaceY + i][originalPlaceX].contains(currentPiece)) {
+                break; // Stop if there is a piece of the same color or if it's out of bounds
+            }
+            validMoves.add(new int[]{originalPlaceY + i, originalPlaceX}); // Down
+            if (currentBoard[originalPlaceY + i][originalPlaceX].equals(opponentPiece)) {
+                break; // Stop if there is an opponent piece
+            }
         }
-        // Controleer of de doelpositie in de lijst van geldige zetten zit
+        // Move up
+        for (int i = 1; i <= move; i++) {
+            if (originalPlaceY - i < 0 || currentBoard[originalPlaceY - i][originalPlaceX].contains(currentPiece)) {
+                break; // Stop if there is a piece of the same color or if it's out of bounds
+            }
+            validMoves.add(new int[]{originalPlaceY - i, originalPlaceX}); // Up
+            if (currentBoard[originalPlaceY - i][originalPlaceX].equals(opponentPiece)) {
+                break; // Stop if there is an opponent piece
+            }
+        }
+        // Move right
+        for (int i = 1; i <= move; i++) {
+            if (originalPlaceX + i >= size || currentBoard[originalPlaceY][originalPlaceX + i].contains(currentPiece)) {
+                break; // Stop if there is a piece of the same color or if it's out of bounds
+            }
+            validMoves.add(new int[]{originalPlaceY, originalPlaceX + i}); // Right
+            if (currentBoard[originalPlaceY][originalPlaceX + i].equals(opponentPiece)) {
+                break; // Stop if there is an opponent piece
+            }
+        }
+        // Move left
+        for (int i = 1; i <= move; i++) {
+            if (originalPlaceX - i < 0 || currentBoard[originalPlaceY][originalPlaceX - i].contains(currentPiece)) {
+                break; // Stop if there is a piece of the same color or if it's out of bounds
+            }
+            validMoves.add(new int[]{originalPlaceY, originalPlaceX - i}); // Left
+            if (currentBoard[originalPlaceY][originalPlaceX - i].equals(opponentPiece)) {
+                break; // Stop if there is an opponent piece
+            }
+        }
+        // Check if the target position is in the list of valid moves
         for (int[] validMove : validMoves) {
             if (validMove[0] == row && validMove[1] == col) {
-                return true; // Zet is geldig
+                return true; // Move is valid
             }
         }
     
-        return false; // Zet is niet geldig
+        return false; // Move is not valid
     }
-
     
-
-
     public void handleReadyButton() {
         if (currentPlayer == 2) {
             startBattlephase();
@@ -385,11 +444,11 @@ public class StrategoGame extends GameFramework {
         readyButton.setEnabled(false);
         switchPlayer();
     }
-
+    
     public void standardbord() {
-
+        // Placeholder for standard board setup (currently empty)
     }
-
+    
     public void readyButton() {
         readyButton = new JButton("Ready");
         readyButton.setEnabled(false); // Disabled until all ships are placed
@@ -399,13 +458,99 @@ public class StrategoGame extends GameFramework {
         // currentGame.getPionnenspeler1().addpionpanal(readyButton);
         add(readyButton, BorderLayout.SOUTH);
     }
-
+    
     public void startBattlephase() {
         Battlephase = true;
         remove(pionPanel1);
         remove(pionPanel2);
         remove(readyButton);
     }
+    
+    public void addButtonToPionPanel() {
+        JButton newButton1 = new JButton("Player 1 Action");
+        newButton1.setPreferredSize(new Dimension(200, 50));
+        newButton1.addActionListener(e -> handlePlayer1Action());
+        pionPanel1.add(newButton1); // Add to Player 1's pionPanel
+    
+        JButton newButton2 = new JButton("Player 2 Action");
+        newButton2.setPreferredSize(new Dimension(200, 50));
+        newButton2.addActionListener(e -> handlePlayer2Action());
+        pionPanel2.add(newButton2); // Add to Player 2's pionPanel
+    
+        pionPanel1.revalidate();
+        pionPanel1.repaint();
+        pionPanel2.revalidate();
+        pionPanel2.repaint();
+    }
+    
+    private void handlePlayer1Action() {
+        ArrayList<Pion> pionnen = currentGame.getPionnenspeler1().getPionnen();
+    
+        int row = size / 2 + 1;
+        int col = 0;
+        for (Pion pion : pionnen) {
+            String naam = pion.getNaam();
+            int waarde = pion.getWaarde();
+            int aantal = pion.getAantal();
+    
+            speler1[row][col] = Blue + " " + naam;
+            speler1[row][col] += " " + waarde;
+            speler2[size - row - 1][col] = Blue;
+            Setgridbutton(row, col, Color.BLUE);
+            if (naam.equals("Flag") || naam.equals("Bomb")) {
+                // Only show the name without value
+                setbuttonstext(row, col, naam);
+            } else {
+                // Show name and value
+                setbuttonstext(row, col, naam + " " + waarde);
+            }
+            System.out.println(naam + " " + waarde + " " + aantal);
+            col++;
+            if (col == size) {
+                col = 0;
+                row++;
+            }
+        }
+    
+        // Activate the ready button
+        readyButton.setEnabled(true);
+    }
+    
+    private void handlePlayer2Action() {
+        ArrayList<Pion> pionnen = currentGame.getPionnenspeler2().getPionnen();
+    
+        int row = size / 2 + 1;
+        int col = 0;
+        for (Pion pion : pionnen) {
+            String naam = pion.getNaam();
+            int waarde = pion.getWaarde();
+            int aantal = pion.getAantal();
+    
+            speler2[row][col] = Red + " " + naam;
+            speler2[row][col] += " " + waarde;
+            speler1[size - row - 1][col] = Red;
+            Setgridbutton(row, col, Color.RED);
+            if (naam.equals("Flag") || naam.equals("Bomb")) {
+                // Only show the name without value
+                setbuttonstext(row, col, naam);
+            } else {
+                // Show name and value
+                setbuttonstext(row, col, naam + " " + waarde);
+            }
+            System.out.println(naam + " " + waarde + " " + aantal);
+            col++;
+            if (col == size) {
+                col = 0;
+                row++;
+            }
+        }
+        readyButton.setEnabled(true);
+    }
+    
+    
+
+
+
     
     public static void Setgridbutton(int row, int col, Color color) {
         gridButtons[row][col].setBackground(color);

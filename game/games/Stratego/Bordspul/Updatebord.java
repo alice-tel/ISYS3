@@ -37,7 +37,7 @@ public class Updatebord {
                     String textWithoutBlue = cell.substring("Blue".length()).trim();
                     String[] parts = cell.split(" ");
                     int waarde = Integer.parseInt(parts[2]);
-                    if (waarde > 1 || waarde < 11) {
+                    if (waarde < 1 || waarde > 10) {
                         textWithoutBlue = parts[1];
                     }
                     // Zet de tekst op de knop
@@ -54,7 +54,7 @@ public class Updatebord {
                     String textWithoutRed = cell.substring("Red".length()).trim();
                     String[] parts = cell.split(" ");
                     int waarde = Integer.parseInt(parts[2]);
-                    if (waarde > 1 || waarde < 11) {
+                    if (waarde < 1 || waarde > 10) {
                         textWithoutRed = parts[1];
                     }
                     // Zet de tekst op de knop

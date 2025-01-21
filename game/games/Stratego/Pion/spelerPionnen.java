@@ -27,7 +27,6 @@ public class spelerPionnen {
     public spelerPionnen(int size) {
         pionnen = new ArrayList<>();
         pionButtons = new ArrayList<>();
-        this.geselecteerdePion = geselecteerdePion;
         // geselecteerdePion = new String();
         pionTelling = new HashMap<>(); // Initialiseer de HashMap
         pionpanel = new JPanel();
@@ -65,7 +64,7 @@ public class spelerPionnen {
 
     private void voegPionnenToe(String naam, int waarde, int aantal, IMoveStrategy moveStrategy, IAttackStrategy attackStrategy) {
         for (int i = 0; i < aantal; i++) {
-            pionnen.add(new Pion(naam, waarde, moveStrategy, attackStrategy));
+            pionnen.add(new Pion(naam, waarde,aantal, moveStrategy, attackStrategy));
         }
 
 
