@@ -7,7 +7,8 @@ import java.util.*;
 
 public class StrategoClient implements Runnable {
 
-    private String hostName = "127.0.0.1";
+//    private String hostName = "127.0.0.1";
+    private String hostName = "172.201.112.199";
     private int portNumber = 7789;
 
     private Socket client;
@@ -31,7 +32,7 @@ public class StrategoClient implements Runnable {
             // Get the user's name
             String userName = getUserName();
 
-            out.println("login " + userName + LocalDateTime.now().getSecond() + LocalDateTime.now().getNano());
+            out.println("login " + userName);
             out.println("subscribe stratego");
 
             String inputMessage;
@@ -65,7 +66,7 @@ public class StrategoClient implements Runnable {
         System.out.print("Enter your name: ");
         return scanner.nextLine();
     }
-    
+
     private void initializeBoard() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -122,9 +123,6 @@ public class StrategoClient implements Runnable {
         int from = randomMove[0];
         int to = randomMove[1];
 
-        int fromIndex = from;
-        int toIndex = to;
-
         int fromRow = from / 8, fromCol = from % 8;
         int toRow = to / 8, toCol = to % 8;
 
@@ -133,9 +131,10 @@ public class StrategoClient implements Runnable {
         board[toRow][toCol] = movingPiece; // Place the piece in the destination cell
 
         // Send the move to the server
-        out.println("move " + fromIndex + " " + toIndex);
+        out.println("move " + from + " " + to);
 
     }
+
 
     private List<int[]> generateValidMoves(String[][] currentBoard) {
         List<int[]> validMoves = new ArrayList<>();
@@ -151,41 +150,75 @@ public class StrategoClient implements Runnable {
 
     private List<int[]> getValidMovesForPiece(int row, int col, String piece, String[][] board) {
         List<int[]> moves = new ArrayList<>();
+        int[] directions = {-1, 1}; // For vertical and horizontal moves
 
-        // Move directions: up, down, left, right
-        int[] directions = {-1, 1}; // Up and Down for vertical, Left and Right for horizontal
+        // Marshal, General, Colonel, Lieutenant, Captain, Sergeant (can move 1 square in any direction)
+        if (piece.equals("Marshal") || piece.equals("General") || piece.equals("Colonel") ||
+                piece.equals("Lieutenant") || piece.equals("Captain") || piece.equals("Sergeant")) {
 
-        if (piece.equals("Scout")) {
-            // Scout can move any number of spaces in any direction (without jumping over other pieces)
             for (int direction : directions) {
-                for (int i = 1; i < 8; i++) { // Moving multiple steps
-                    // Vertical moves
-                    if (row + direction * i >= 0 && row + direction * i < 8 && board[row + direction * i][col].equals(".")) {
-                        moves.add(new int[]{row * 8 + col, (row + direction * i) * 8 + col});
-                    } else break; // Stop if obstacle is encountered
-                    // Horizontal moves
-                    if (col + direction * i >= 0 && col + direction * i < 8 && board[row][col + direction * i].equals(".")) {
-                        moves.add(new int[]{row * 8 + col, row * 8 + (col + direction * i)});
-                    } else break; // Stop if obstacle is encountered
-                }
-            }
-        } else if (piece.equals("Miner") || piece.equals("Spy")) {
-            // Miner can move 1 space in any direction
-            for (int direction : directions) {
-                // Vertical moves
+                // Vertical moves (up/down)
                 if (row + direction >= 0 && row + direction < 8 && board[row + direction][col].equals(".")) {
                     moves.add(new int[]{row * 8 + col, (row + direction) * 8 + col});
                 }
-                // Horizontal moves
+                // Horizontal moves (left/right)
                 if (col + direction >= 0 && col + direction < 8 && board[row][col + direction].equals(".")) {
                     moves.add(new int[]{row * 8 + col, row * 8 + (col + direction)});
                 }
             }
         }
 
-        // Additional logic for other pieces like Bomb, Flag, still needs to be added, I think. I don't know if this is necessary or if I'm overcomplicating it.
+        // Miner (can move 1 square in any direction and defuse bombs)
+        else if (piece.equals("Miner")) {
+            for (int direction : directions) {
+                // Vertical moves (up/down)
+                if (row + direction >= 0 && row + direction < 8 && (board[row + direction][col].equals(".") || board[row + direction][col].equals("Bomb"))) {
+                    moves.add(new int[]{row * 8 + col, (row + direction) * 8 + col});
+                }
+                // Horizontal moves (left/right)
+                if (col + direction >= 0 && col + direction < 8 && (board[row][col + direction].equals(".") || board[row][col + direction].equals("Bomb"))) {
+                    moves.add(new int[]{row * 8 + col, row * 8 + (col + direction)});
+                }
+            }
+        }
+
+        // Scout (can move any number of squares in a straight line)
+        else if (piece.equals("Scout")) {
+            // Move vertically and horizontally in all directions
+            for (int direction : directions) {
+                for (int i = 1; i < 8; i++) {
+                    // Vertical moves (up/down)
+                    if (row + direction * i >= 0 && row + direction * i < 8 && board[row + direction * i][col].equals(".")) {
+                        moves.add(new int[]{row * 8 + col, (row + direction * i) * 8 + col});
+                    } else break; // Stop if obstacle is encountered
+
+                    // Horizontal moves (left/right)
+                    if (col + direction * i >= 0 && col + direction * i < 8 && board[row][col + direction * i].equals(".")) {
+                        moves.add(new int[]{row * 8 + col, row * 8 + (col + direction * i)});
+                    } else break; // Stop if obstacle is encountered
+                }
+            }
+        }
+
+        // Spy (can move 1 square in any direction, but can beat Marshal)
+        else if (piece.equals("Spy")) {
+            for (int direction : directions) {
+                // Vertical moves (up/down)
+                if (row + direction >= 0 && row + direction < 8 && board[row + direction][col].equals(".")) {
+                    moves.add(new int[]{row * 8 + col, (row + direction) * 8 + col});
+                }
+                // Horizontal moves (left/right)
+                if (col + direction >= 0 && col + direction < 8 && board[row][col + direction].equals(".")) {
+                    moves.add(new int[]{row * 8 + col, row * 8 + (col + direction)});
+                }
+            }
+        }
+
+        // Bomb (does not move)
+        // Flag (does not move)
         return moves;
     }
+
 
     private String[][] simulateMove(String[][] currentBoard, int from, int to) {
         String[][] newBoard = new String[8][8];
