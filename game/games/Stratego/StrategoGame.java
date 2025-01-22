@@ -295,12 +295,13 @@ public class StrategoGame extends GameFramework {
                     return;
                 }
                 switchPlayer();
+                
             }
             
         }
         selectedpiece = CurrentGrid[row][col];
         originalplacey = row;
-        originalplacex = col;
+        originalplacex = col; 
         System.out.println(selectedpiece);
     }
     
@@ -393,7 +394,7 @@ private void printGrid(String[][] grid) {
     
         // Move down
         for (int i = 1; i <= move; i++) {
-            if (originalPlaceY + i >= size || currentBoard[originalPlaceY + i][originalPlaceX].contains(currentPiece)) {
+            if (originalPlaceY + i >= size || currentBoard[originalPlaceY + i][originalPlaceX].contains(currentPiece)|| currentBoard[originalPlaceY + i][originalPlaceX].equals(Water)) {
                 break; // Stop if there is a piece of the same color or if it's out of bounds
             }
             validMoves.add(new int[]{originalPlaceY + i, originalPlaceX}); // Down
@@ -403,7 +404,7 @@ private void printGrid(String[][] grid) {
         }
         // Move up
         for (int i = 1; i <= move; i++) {
-            if (originalPlaceY - i < 0 || currentBoard[originalPlaceY - i][originalPlaceX].contains(currentPiece)) {
+            if (originalPlaceY - i < 0 || currentBoard[originalPlaceY - i][originalPlaceX].contains(currentPiece)|| currentBoard[originalPlaceY - i][originalPlaceX].equals(Water)) {
                 break; // Stop if there is a piece of the same color or if it's out of bounds
             }
             validMoves.add(new int[]{originalPlaceY - i, originalPlaceX}); // Up
@@ -413,7 +414,7 @@ private void printGrid(String[][] grid) {
         }
         // Move right
         for (int i = 1; i <= move; i++) {
-            if (originalPlaceX + i >= size || currentBoard[originalPlaceY][originalPlaceX + i].contains(currentPiece)) {
+            if (originalPlaceX + i >= size || currentBoard[originalPlaceY][originalPlaceX + i].contains(currentPiece)|| currentBoard[originalPlaceY][originalPlaceX + i].equals(Water)) {
                 break; // Stop if there is a piece of the same color or if it's out of bounds
             }
             validMoves.add(new int[]{originalPlaceY, originalPlaceX + i}); // Right
@@ -423,7 +424,7 @@ private void printGrid(String[][] grid) {
         }
         // Move left
         for (int i = 1; i <= move; i++) {
-            if (originalPlaceX - i < 0 || currentBoard[originalPlaceY][originalPlaceX - i].contains(currentPiece)) {
+            if (originalPlaceX - i < 0 || currentBoard[originalPlaceY][originalPlaceX - i].contains(currentPiece)|| currentBoard[originalPlaceY][originalPlaceX - i].equals(Water)) {
                 break; // Stop if there is a piece of the same color or if it's out of bounds
             }
             validMoves.add(new int[]{originalPlaceY, originalPlaceX - i}); // Left
