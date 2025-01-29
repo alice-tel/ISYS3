@@ -173,6 +173,11 @@ public class spelerPionnen {
         }
         return null; // Return null if no matching pion is found
     }
+
+    public ArrayList<Pion> getPionnenlijst(){
+
+             return pionnen;
+    }
     
     public void decreasePieceCount(String pionNaam) {
         for (JButton button :pionButtons) {
