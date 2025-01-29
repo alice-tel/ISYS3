@@ -1,6 +1,7 @@
 package game.games.Stratego.Tournament;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 
 import javax.swing.*;
