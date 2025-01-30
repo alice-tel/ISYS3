@@ -9,10 +9,12 @@ public class Updatebord {
 
     public Updatebord(String[][] bord) {
         this.bord = bord;
+        System.out.println("Updatebord constructor");
         updateBoardUI();
     }
 
     public void updateBoardUI() {
+        System.out.println("Updatebord updateBoardUI");
         for (int row = 0; row < bord.length; row++) { // Iterate over rows
             for (int col = 0; col < bord[row].length; col++) { // Iterate over columns
                 // char temp = bord[row][col];

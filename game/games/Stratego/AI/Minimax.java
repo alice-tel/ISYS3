@@ -8,7 +8,7 @@ public class Minimax {
     
 
 
-    private static final int MAX_DEPTH = 4; // Maximale diepte voor de zoekboom
+    private static final int MAX_DEPTH = 1; // Maximale diepte voor de zoekboom
 
     public static Move findBestMove(String[][] board, int currentPlayer) {
         return expectiminimax(board, currentPlayer,MAX_DEPTH, true);

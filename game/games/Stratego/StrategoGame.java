@@ -37,16 +37,22 @@ public class StrategoGame extends GameFramework {
     private static String Blue = "Blue";
     private static String Unoccupied = "-";
     private static String Water = "Water";
+    private boolean AI;
+    private boolean AI2;
+    private static final int PLAYER1 = 1;
+    private static final int PLAYER2 = 2;
 
 
-    public StrategoGame(int size) {
+    public StrategoGame(int size,boolean AI, boolean AI2) {
         super(size, size, 1600, 900, "Here should be the rules of Stratego");
-
+        this.AI = AI;
+        this.AI2 = AI2;
 
         this.size = size;
         speler1 = new String[size][size];
         speler2 = new String[size][size];
         allePionnen = new String[size][size];
+
 
         currentPlayer = 1;
         
@@ -78,20 +84,22 @@ public class StrategoGame extends GameFramework {
         new Updatebord(currentboard);
         revalidate();
         repaint();
-
         
-        if(currentPlayer == 1){
-        if (Battlephase){Move bestMove = Minimax.findBestMove(currentboard, currentPlayer);
-            if (bestMove == null) {
-                System.out.println("No move to execute. bestMove is null.");
-                return;
-            }
-            System.out.println("Best move: " + Arrays.toString(bestMove.getFrom()));
-            System.out.println("Best move: " + Arrays.toString(bestMove.getTo()));
-            System.out.println("Best move: " + (bestMove.getValue()));
-        executeMove(bestMove);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-    }
+
+        if(Battlephase){
+            if(AI && currentPlayer == 1){
+                AImove(currentboard);
+                
+            }
+            if(AI2 && currentPlayer == 2){
+                AImove(currentboard);
+            }
+        }
         // Update the UI and status
     
         // Update the panel with pieces
@@ -102,6 +110,18 @@ public class StrategoGame extends GameFramework {
         // Repaint and revalidate the GUI
         revalidate();
         repaint();
+    }
+    public void AImove(String[][] currentboard){
+        Move bestMove = Minimax.findBestMove(currentboard, currentPlayer);
+            if (bestMove == null) {
+                System.out.println("No move to execute. bestMove is null.");
+                return;
+            }
+            System.out.println("Best move: " + Arrays.toString(bestMove.getFrom()));
+            System.out.println("Best move: " + Arrays.toString(bestMove.getTo()));
+            System.out.println("Best move: " + (bestMove.getValue()));
+        executeMove(bestMove);
+        
     }
 
     public void executeMove(Move bestMove){
@@ -617,6 +637,7 @@ private void printGrid(String[][] grid) {
 
     
     public static void Setgridbutton(int row, int col, Color color) {
+        System.out.println("Setting color of button at [" + row + ", " + col + "] to " + color);
         gridButtons[row][col].setBackground(color);
     }
 
