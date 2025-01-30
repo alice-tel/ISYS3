@@ -2,6 +2,7 @@ package game.games.Stratego;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -10,6 +11,8 @@ import javax.swing.border.LineBorder;
 
 import game.framework.GameFramework;
 import game.games.Stratego.Pion.*;
+import game.games.Stratego.AI.Minimax;
+import game.games.Stratego.AI.Move;
 import game.games.Stratego.Bordspul.*;
 
 public class StrategoGame extends GameFramework {
@@ -30,12 +33,10 @@ public class StrategoGame extends GameFramework {
     private String selectedpiece = null;
     private int originalplacey = 0;
     private int originalplacex = 0;
-    private String Red = "Red";
-    private String Blue = "Blue";
-    private String Unoccupied = "-";
-    private String Water = "Water";
-    private boolean player1HasMovablePieces = true;
-    private boolean player2HasMovablePieces = true;
+    private static String Red = "Red";
+    private static String Blue = "Blue";
+    private static String Unoccupied = "-";
+    private static String Water = "Water";
 
 
     public StrategoGame(int size) {
@@ -70,9 +71,27 @@ public class StrategoGame extends GameFramework {
     private void switchPlayer() {
         // Switch the player
         currentPlayer = (currentPlayer == 1) ? 2 : 1;
-        
-        new Updatebord(currentPlayer == 1 ? speler1 : speler2);
 
+        
+        String [][] currentboard = currentPlayer == 1 ? speler1 : speler2;
+        
+        new Updatebord(currentboard);
+        revalidate();
+        repaint();
+
+        
+        if(currentPlayer == 1){
+        if (Battlephase){Move bestMove = Minimax.findBestMove(currentboard, currentPlayer);
+            if (bestMove == null) {
+                System.out.println("No move to execute. bestMove is null.");
+                return;
+            }
+            System.out.println("Best move: " + Arrays.toString(bestMove.getFrom()));
+            System.out.println("Best move: " + Arrays.toString(bestMove.getTo()));
+            System.out.println("Best move: " + (bestMove.getValue()));
+        executeMove(bestMove);
+        }
+    }
         // Update the UI and status
     
         // Update the panel with pieces
@@ -83,6 +102,14 @@ public class StrategoGame extends GameFramework {
         // Repaint and revalidate the GUI
         revalidate();
         repaint();
+    }
+
+    public void executeMove(Move bestMove){
+        int[] start = bestMove.getFrom();
+        int[] end = bestMove.getTo();
+        HandleMove(start[0], start[1]);
+        HandleMove(end[0], end[1]);
+
     }
 
     public void initializGrids() {
@@ -138,175 +165,181 @@ public class StrategoGame extends GameFramework {
     
        @Override
        protected void onGridButtonClicked(int row, int col) { // ALL THIS CODE WAS FOR TESTING, REWRITE WHOLE METHOD
-           // Fetch the selected Pion object
-           Pion selectedPion1;
-           spelerPionnen pionnen1;
-           Pion selectedPion2;
-           spelerPionnen pionnen2;
-    
-            selectedPion1 = currentGame.getSpeler1SelectedPionObject();
-            pionnen1 = currentGame.getPionnenspeler1();
-        
-            selectedPion2 = currentGame.getSpeler2SelectedPionObject();
-            pionnen2 = currentGame.getPionnenspeler2();
-        
         if (!Battlephase) {
-            if (row > size / 2) { // Check if the grid cell is valid for placing a piece
-                if (currentPlayer == 1) {
-                    if (selectedPion1 == null) {
-                        System.out.println("No piece selected to place!");
-                        return;
-                    }
-
-                    if (speler1[row][col] != Unoccupied) {
-                        return;
-                    }
-                    // Place the piece on the grid
-                    speler1[row][col] = Blue + " "+ selectedPion1.getNaam(); // Update logical grid
-                    speler1[row][col] += " " + pionnen1.getPionwaarde(); // Update logical grid   
-                    allePionnen[row][col] = Blue + " " + selectedPion1.getNaam(); // Update logical grid
-                    allePionnen[row][col] += " " + pionnen1.getPionwaarde(); // Update logical grid   
-                    speler2[size -row -1][col] = Blue; // Update logical grid
-                    Setgridbutton(row, col, Color.BLUE);
-                    if (selectedPion1.getNaam().equals("Flag") || selectedPion1.getNaam().equals("Bomb")) {
-                        // Only show the name without value
-                        setbuttonstext(row, col, selectedPion1.getNaam());
-                    } else {
-                        // Show name and value
-                        setbuttonstext(row, col, selectedPion1.getNaam() + " " + pionnen1.getPionwaarde());
-                    }
-                    pionnen1.decreasePieceCount(selectedPion1.getNaam());
-                    System.out.println("Placed " + selectedPion1.getNaam() + " at [" + row + ", " + col + "]");
-                    System.out.println(speler1);
-                    
-                    if (!currentGame.getPionnenspeler1().availablepieces()) {
-                        readyButton.setEnabled(true);
-                    }
-                }
-                else {
-                    if (selectedPion2 == null) {
-                        System.out.println("No piece selected to place!");
-                        return;
-                    }
-
-                    if (speler2[row][col] != Unoccupied) {
-                        return;
-                    }
-                    // Place the piece on the grid
-                    speler2[row][col] = Red + " " + selectedPion2.getNaam(); // Update logical grid
-                    speler2[row][col] += " " +pionnen2.getPionwaarde(); // Update logical grid
-                    allePionnen[size -row -1][col] = Red + " " + selectedPion2.getNaam(); // Update logical grid
-                    allePionnen[size -row -1][col] += " " + pionnen2.getPionwaarde(); // Update logical grid   
-                    speler1[size -row -1][col] = Red;
-                    Setgridbutton(row, col, Color.RED);
-                    if (selectedPion2.getNaam().equals("Flag") || selectedPion2.getNaam().equals("Bomb")) {
-                        // Only show the name without value
-                        setbuttonstext(row, col, selectedPion2.getNaam());
-                    } else {
-                        // Show name and value
-                        setbuttonstext(row, col, selectedPion2.getNaam() + " " + pionnen2.getPionwaarde());
-                    }
-                    pionnen2.decreasePieceCount(selectedPion2.getNaam());
-                    System.out.println("Placed " + selectedPion2.getNaam() + " at [" + row + ", " + col + "]");
-                    System.out.println(speler2);
-                    
-                    if (!currentGame.getPionnenspeler2().availablepieces()) {
-                        readyButton.setEnabled(true);
-                    }
-                }
-            }
+            Handlesetupphase(row, col);
         }
         if(Battlephase){
-            boolean	attacker;
-            boolean	defender;
-            int otherplayer = (currentPlayer == 1) ? 2 : 1;
-            String[][] CurrentGrid = null;
-            String[][] OtherGrid = null;
-            String currentpiece = null;
-            String Opponentpiece = null;
-
-            if(currentPlayer == 1){
-                CurrentGrid = speler1;
-                OtherGrid = speler2;
-                currentpiece = Blue;
-                Opponentpiece = Red;
-                if (!player1HasMovablePieces){
-                    switchPlayer();
-                }
-            }
-            if(currentPlayer == 2){
-                CurrentGrid = speler2; 
-                OtherGrid = speler1;
-                currentpiece = Red;
-                Opponentpiece = Blue;
-                if (!player2HasMovablePieces){
-                    switchPlayer();
-                }
-            }
-            if (CurrentGrid[row][col] == Water){
-                return;
-            }
-                if(selectedpiece != null && selectedpiece.startsWith(currentpiece)){
-                    if(isValidMove(originalplacey, originalplacex, row , col ,selectedpiece)){
-                if(CurrentGrid[row][col] == Unoccupied){
-                    CurrentGrid[row][col] = selectedpiece;
-                    OtherGrid[size -row -1][col] = currentpiece;
-                    CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
-                    OtherGrid[size -originalplacey - 1][originalplacex] = Unoccupied ;
-                    }
-                if(CurrentGrid[row][col] == Opponentpiece){
-                    System.out.println(OtherGrid[size -row -1][col]);
-                    Duel duel = new Duel(selectedpiece,OtherGrid[size -row -1][col]);
-                    attacker = duel.attackerwin();
-                    defender =  duel.defenderwin();
-                    if(!attacker && !defender){
-                    CurrentGrid[row][col] = Unoccupied;
-                    OtherGrid[size -row -1][col] = Unoccupied;
-                    CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
-                    OtherGrid[size -originalplacey - 1][originalplacex] = Unoccupied ;
-                    statusLabel.setText("Both pieces are removed from the board");
-                    }
-                
-                if(attacker){
-                    statusLabel.setText("Player " + currentPlayer + " "+ selectedpiece + " has won the duel from " + OtherGrid[size -row - 1][col]);
-                        CurrentGrid[row][col] = selectedpiece;
-                        OtherGrid[size -row -1][col] = currentpiece;
-                        CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
-                        OtherGrid[size -originalplacey - 1][originalplacex] = Unoccupied;
-                    }
-                if(defender){
-                    statusLabel.setText("Player " + otherplayer + " " + OtherGrid[size -row - 1][col] + " has won the duel from " + selectedpiece);
-                        CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
-                        OtherGrid[size -originalplacey - 1][originalplacex] = Unoccupied;
-                    }
-                }
-                printGrid(CurrentGrid);
-                printGrid(OtherGrid);
-                if(currentPlayer == 1){
-                    speler1 = CurrentGrid;
-                    speler2 = OtherGrid;
-                }
-                if(currentPlayer == 2){
-                   speler2 = CurrentGrid; 
-                   speler1 = OtherGrid;
-                }
-                if(Checkforwin()){
-                    Battlephase = false;
-                    return;
-                }
-                switchPlayer();
-                
-            }
-            
+            HandleMove(row, col);
         }
-        selectedpiece = CurrentGrid[row][col];
-        originalplacey = row;
-        originalplacex = col; 
-        System.out.println(selectedpiece);
-    }
+    
     
         return;
     }
+    public void Handlesetupphase(int row, int col){
+         // Fetch the selected Pion object
+         Pion selectedPion1;
+         spelerPionnen pionnen1;
+         Pion selectedPion2;
+         spelerPionnen pionnen2;
+  
+          selectedPion1 = currentGame.getSpeler1SelectedPionObject();
+          pionnen1 = currentGame.getPionnenspeler1();
+      
+          selectedPion2 = currentGame.getSpeler2SelectedPionObject();
+          pionnen2 = currentGame.getPionnenspeler2();
+      
+      if (!Battlephase) {
+          if (row > size / 2) { // Check if the grid cell is valid for placing a piece
+              if (currentPlayer == 1) {
+                  if (selectedPion1 == null) {
+                      System.out.println("No piece selected to place!");
+                      return;
+                  }
+
+                  if (speler1[row][col] != Unoccupied) {
+                      return;
+                  }
+                  // Place the piece on the grid
+                  speler1[row][col] = Blue + " "+ selectedPion1.getNaam(); // Update logical grid
+                  speler1[row][col] += " " + pionnen1.getPionwaarde(); // Update logical grid   
+                  allePionnen[row][col] = Blue + " " + selectedPion1.getNaam(); // Update logical grid
+                  allePionnen[row][col] += " " + pionnen1.getPionwaarde(); // Update logical grid   
+                  speler2[size -row -1][col] = Blue; // Update logical grid
+                  Setgridbutton(row, col, Color.BLUE);
+                  if (selectedPion1.getNaam().equals("Flag") || selectedPion1.getNaam().equals("Bomb")) {
+                      // Only show the name without value
+                      setbuttonstext(row, col, selectedPion1.getNaam());
+                  } else {
+                      // Show name and value
+                      setbuttonstext(row, col, selectedPion1.getNaam() + " " + pionnen1.getPionwaarde());
+                  }
+                  pionnen1.decreasePieceCount(selectedPion1.getNaam());
+                  System.out.println("Placed " + selectedPion1.getNaam() + " at [" + row + ", " + col + "]");
+                  System.out.println(speler1);
+                  
+                  if (!currentGame.getPionnenspeler1().availablepieces()) {
+                      readyButton.setEnabled(true);
+                  }
+              }
+              else {
+                  if (selectedPion2 == null) {
+                      System.out.println("No piece selected to place!");
+                      return;
+                  }
+
+                  if (speler2[row][col] != Unoccupied) {
+                      return;
+                  }
+                  // Place the piece on the grid
+                  speler2[row][col] = Red + " " + selectedPion2.getNaam(); // Update logical grid
+                  speler2[row][col] += " " +pionnen2.getPionwaarde(); // Update logical grid
+                  allePionnen[size -row -1][col] = Red + " " + selectedPion2.getNaam(); // Update logical grid
+                  allePionnen[size -row -1][col] += " " + pionnen2.getPionwaarde(); // Update logical grid   
+                  speler1[size -row -1][col] = Red;
+                  Setgridbutton(row, col, Color.RED);
+                  if (selectedPion2.getNaam().equals("Flag") || selectedPion2.getNaam().equals("Bomb")) {
+                      // Only show the name without value
+                      setbuttonstext(row, col, selectedPion2.getNaam());
+                  } else {
+                      // Show name and value
+                      setbuttonstext(row, col, selectedPion2.getNaam() + " " + pionnen2.getPionwaarde());
+                  }
+                  pionnen2.decreasePieceCount(selectedPion2.getNaam());
+                  System.out.println("Placed " + selectedPion2.getNaam() + " at [" + row + ", " + col + "]");
+                  System.out.println(speler2);
+                  
+                  if (!currentGame.getPionnenspeler2().availablepieces()) {
+                      readyButton.setEnabled(true);
+                  }
+              }
+          }
+      }
+    }
+
+
+    public void HandleMove(int row, int col){
+        boolean	attacker;
+        boolean	defender;
+        int otherplayer = (currentPlayer == 1) ? 2 : 1;
+        String[][] CurrentGrid = null;
+        String[][] OtherGrid = null;
+        String currentpiece = null;
+        String Opponentpiece = null;
+
+        if(currentPlayer == 1){
+            CurrentGrid = speler1;
+            OtherGrid = speler2;
+            currentpiece = Blue;
+            Opponentpiece = Red;
+        }
+        if(currentPlayer == 2){
+            CurrentGrid = speler2; 
+            OtherGrid = speler1;
+            currentpiece = Red;
+            Opponentpiece = Blue;
+        }
+        if (CurrentGrid[row][col] == Water){
+            return;
+        }
+            if(selectedpiece != null && selectedpiece.startsWith(currentpiece)){
+                if(isValidMove(originalplacey, originalplacex, row , col ,selectedpiece, currentPlayer, CurrentGrid, size)){
+            if(CurrentGrid[row][col] == Unoccupied){
+                CurrentGrid[row][col] = selectedpiece;
+                OtherGrid[size -row -1][col] = currentpiece;
+                CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
+                OtherGrid[size -originalplacey - 1][originalplacex] = Unoccupied ;
+                }
+            if(CurrentGrid[row][col] == Opponentpiece){
+                System.out.println(OtherGrid[size -row -1][col]);
+                Duel duel = new Duel(selectedpiece,OtherGrid[size -row -1][col]);
+                attacker = duel.attackerwin();
+                defender =  duel.defenderwin();
+                if(!attacker && !defender){
+                CurrentGrid[row][col] = Unoccupied;
+                OtherGrid[size -row -1][col] = Unoccupied;
+                CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
+                OtherGrid[size -originalplacey - 1][originalplacex] = Unoccupied ;
+                statusLabel.setText("Both pieces are removed from the board");
+                }
+            
+            if(attacker){
+                statusLabel.setText("Player " + currentPlayer + " "+ selectedpiece + " has won the duel from " + OtherGrid[size -row - 1][col]);
+                    CurrentGrid[row][col] = selectedpiece;
+                    OtherGrid[size -row -1][col] = currentpiece;
+                    CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
+                    OtherGrid[size -originalplacey - 1][originalplacex] = Unoccupied;
+                }
+            if(defender){
+                statusLabel.setText("Player " + otherplayer + " " + OtherGrid[size -row - 1][col] + " has won the duel from " + selectedpiece);
+                    CurrentGrid[originalplacey][originalplacex] = Unoccupied ;
+                    OtherGrid[size -originalplacey - 1][originalplacex] = Unoccupied;
+                }
+            }
+            printGrid(CurrentGrid);
+            printGrid(OtherGrid);
+            if(currentPlayer == 1){
+                speler1 = CurrentGrid;
+                speler2 = OtherGrid;
+            }
+            if(currentPlayer == 2){
+               speler2 = CurrentGrid; 
+               speler1 = OtherGrid;
+            }
+            if(Checkforwin(currentPlayer, speler1, speler2, size)){
+                Battlephase = false;
+                return;
+            }
+            switchPlayer();
+            
+        }
+        
+    }
+    selectedpiece = CurrentGrid[row][col];
+    originalplacey = row;
+    originalplacex = col; 
+    System.out.println(selectedpiece);
+}
+
 
 
 // Helper function to print a single grid
@@ -321,10 +354,10 @@ private void printGrid(String[][] grid) {
 
 
     
-    public boolean Checkforwin(){
+    public static boolean Checkforwin(int currentPlayer, String[][] speler1, String[][] speler2, int size){
         int flagcount = 0;
-        player1HasMovablePieces = false;
-        player2HasMovablePieces = false;
+        boolean player1HasMovablePieces = false;
+        boolean player2HasMovablePieces = false;
         String Opponentpiece = (currentPlayer == 1) ? Red : Blue;
         String currentPiece = (currentPlayer == 1) ? Blue : Red;
         if(currentPlayer == 1){
@@ -342,7 +375,7 @@ private void printGrid(String[][] grid) {
                 }
             }
             if(flagcount == 0){
-                statusLabel.setText("Player " + currentPlayer + " has won the game");
+                
                 return true;
             }
         }
@@ -361,13 +394,12 @@ private void printGrid(String[][] grid) {
                 }
             }
             if(flagcount == 0){
-                statusLabel.setText("Player " + currentPlayer + " has won the game");
+                
                 return true;
             }
            
         }
         if (!player1HasMovablePieces && !player2HasMovablePieces) {
-            statusLabel.setText("The game is a tie!");
             return true;
         }
         System.out.println(player1HasMovablePieces);
@@ -375,12 +407,23 @@ private void printGrid(String[][] grid) {
         return false;
     }
 
-    public boolean isValidMove(int originalPlaceY, int originalPlaceX, int row, int col, String selectedPiece) {
+    public static boolean isValidMove(int originalPlaceY, int originalPlaceX, int row, int col, String selectedPiece, int currentPlayer, String[][] currentBoard,int size) {
         int move = 1;
-        String[][] currentBoard = (currentPlayer == 1) ? speler1 : speler2;
-        String currentPiece = (currentPlayer == 1) ? Blue : Red;
-        String opponentPiece = (currentPlayer == 1) ? Red : Blue;
-    
+        String currentPiece = (currentPlayer == 1) ? "Blue" : "Red";
+        String opponentPiece = (currentPlayer == 1) ? "Red" : "Blue";
+        String Water = "Water";
+ 
+        if(selectedPiece == null){
+            return false;
+        }
+        if(row < 0 || row >= size || col < 0 || col >= size){
+            return false;
+        }
+        if (originalPlaceX < 0 || originalPlaceX >= size || originalPlaceY < 0 || originalPlaceY >= size){
+            return false; // Cannot move to the same position
+            
+        }
+
         // Special moves for certain pieces
         if (selectedPiece.contains("Flag") || selectedPiece.contains("Bomb")) {
             return false; // These pieces cannot move
@@ -394,8 +437,12 @@ private void printGrid(String[][] grid) {
     
         // Move down
         for (int i = 1; i <= move; i++) {
-            if (originalPlaceY + i >= size || currentBoard[originalPlaceY + i][originalPlaceX].contains(currentPiece)|| currentBoard[originalPlaceY + i][originalPlaceX].equals(Water)) {
+           
+            if (originalPlaceY + i >= size || currentBoard[originalPlaceY + i][originalPlaceX] == null) {
                 break; // Stop if there is a piece of the same color or if it's out of bounds
+            }
+            if(currentBoard[originalPlaceY + i][originalPlaceX].contains(currentPiece)|| currentBoard[originalPlaceY + i][originalPlaceX].equals(Water)){
+                break;
             }
             validMoves.add(new int[]{originalPlaceY + i, originalPlaceX}); // Down
             if (currentBoard[originalPlaceY + i][originalPlaceX].equals(opponentPiece)) {
@@ -404,8 +451,12 @@ private void printGrid(String[][] grid) {
         }
         // Move up
         for (int i = 1; i <= move; i++) {
-            if (originalPlaceY - i < 0 || currentBoard[originalPlaceY - i][originalPlaceX].contains(currentPiece)|| currentBoard[originalPlaceY - i][originalPlaceX].equals(Water)) {
+           
+            if (originalPlaceY - i < 0 || currentBoard[originalPlaceY - i][originalPlaceX] == null) {
                 break; // Stop if there is a piece of the same color or if it's out of bounds
+            }
+            if(currentBoard[originalPlaceY - i][originalPlaceX].contains(currentPiece)|| currentBoard[originalPlaceY - i][originalPlaceX].equals(Water)){
+                break;
             }
             validMoves.add(new int[]{originalPlaceY - i, originalPlaceX}); // Up
             if (currentBoard[originalPlaceY - i][originalPlaceX].equals(opponentPiece)) {
@@ -414,8 +465,12 @@ private void printGrid(String[][] grid) {
         }
         // Move right
         for (int i = 1; i <= move; i++) {
-            if (originalPlaceX + i >= size || currentBoard[originalPlaceY][originalPlaceX + i].contains(currentPiece)|| currentBoard[originalPlaceY][originalPlaceX + i].equals(Water)) {
+           
+            if (originalPlaceX + i >= size || currentBoard[originalPlaceY][originalPlaceX + i] == null) {
                 break; // Stop if there is a piece of the same color or if it's out of bounds
+            }
+            if(currentBoard[originalPlaceY][originalPlaceX + i].contains(currentPiece)|| currentBoard[originalPlaceY][originalPlaceX + i].equals(Water)){
+                break;
             }
             validMoves.add(new int[]{originalPlaceY, originalPlaceX + i}); // Right
             if (currentBoard[originalPlaceY][originalPlaceX + i].equals(opponentPiece)) {
@@ -424,8 +479,12 @@ private void printGrid(String[][] grid) {
         }
         // Move left
         for (int i = 1; i <= move; i++) {
-            if (originalPlaceX - i < 0 || currentBoard[originalPlaceY][originalPlaceX - i].contains(currentPiece)|| currentBoard[originalPlaceY][originalPlaceX - i].equals(Water)) {
+            
+            if (originalPlaceX - i < 0 || currentBoard[originalPlaceY][originalPlaceX - i] == null) {
                 break; // Stop if there is a piece of the same color or if it's out of bounds
+            }
+            if(currentBoard[originalPlaceY][originalPlaceX - i].contains(currentPiece)|| currentBoard[originalPlaceY][originalPlaceX - i].equals(Water)){
+                break;
             }
             validMoves.add(new int[]{originalPlaceY, originalPlaceX - i}); // Left
             if (currentBoard[originalPlaceY][originalPlaceX - i].equals(opponentPiece)) {
@@ -438,7 +497,7 @@ private void printGrid(String[][] grid) {
                 return true; // Move is valid
             }
         }
-    
+    System.out.println("No valid move found");
         return false; // Move is not valid
     }
     
