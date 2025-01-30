@@ -85,12 +85,6 @@ public class StrategoGame extends GameFramework {
         revalidate();
         repaint();
         
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         if(Battlephase){
             if(AI && currentPlayer == 1){
                 AImove(currentboard);
