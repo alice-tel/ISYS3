@@ -72,6 +72,18 @@ public class StrategoGame extends GameFramework {
         
         new Updatebord(currentPlayer == 1 ? speler1 : speler2);
 
+<<<<<<< Updated upstream
+=======
+        if(Battlephase){
+            if(AI && currentPlayer == 1){
+                AImove(speler1);
+                
+            }
+            if(AI2 && currentPlayer == 2){
+                AImove(speler2);
+            }
+        }
+>>>>>>> Stashed changes
         // Update the UI and status
     
         // Update the panel with pieces
@@ -83,6 +95,61 @@ public class StrategoGame extends GameFramework {
         revalidate();
         repaint();
     }
+<<<<<<< Updated upstream
+=======
+
+    public void switchPlayer(int currentplayer) {
+        // Switch the player
+        System.out.println("Switching player");
+        currentPlayer = currentplayer;
+        
+        String [][] currentboard = currentPlayer == 1 ? speler1 : speler2;
+        
+        new Updatebord(speler1);
+        revalidate();
+        repaint();
+
+        if(Battlephase){
+            if(AI && currentPlayer == 1){
+                AImove(speler1);
+                
+            }
+            if(AI2 && currentPlayer == 2){
+                AImove(speler2);
+            }
+        }
+        // Update the UI and status
+        if (!Battlephase) {
+            pionPanel1.setVisible(false);
+            add(pionPanel2, BorderLayout.EAST);
+        }
+        // Update the panel with pieces
+        revalidate();
+        repaint();
+    }
+
+
+    public void AImove(String[][] currentboard){
+        Move bestMove = Minimax.findBestMove(currentboard, currentPlayer);
+            if (bestMove == null) {
+                System.out.println("No move to execute. bestMove is null.");
+                return;
+            }
+            System.out.println("Best move: " + Arrays.toString(bestMove.getFrom()));
+            System.out.println("Best move: " + Arrays.toString(bestMove.getTo()));
+            System.out.println("Best move: " + (bestMove.getValue()));
+        currentMove = bestMove;
+        System.out.println("Best move: " + Arrays.toString(bestMove.getFrom()));
+        executeMove(bestMove);
+        
+    }
+    public void executeMove(Move bestMove){
+        int[] start = bestMove.getFrom();
+        int[] end = bestMove.getTo();
+        HandleMove(start[0], start[1]);
+        HandleMove(end[0], end[1]);
+    }
+>>>>>>> Stashed changes
 
     public void initializGrids() {
         for (int row = 0; row < size; row++) {
@@ -188,6 +255,7 @@ public class StrategoGame extends GameFramework {
                         return;
                     }
 
+<<<<<<< Updated upstream
                     if (speler2[row][col] != Unoccupied) {
                         return;
                     }
@@ -223,6 +291,22 @@ public class StrategoGame extends GameFramework {
             String[][] OtherGrid = null;
             String currentpiece = null;
             String Opponentpiece = null;
+=======
+ public void resetboard(){
+    initializGrids();
+    currentPlayer = 1;
+
+ }
+
+ public void HandleMove(int row, int col){
+     boolean	attacker;
+     boolean	defender;
+     int otherplayer = (currentPlayer == 1) ? 2 : 1;
+     String[][] CurrentGrid = null;
+     String[][] OtherGrid = null;
+     String currentpiece = null;
+     String Opponentpiece = null;
+>>>>>>> Stashed changes
 
             if(currentPlayer == 1){
                 CurrentGrid = speler1;
