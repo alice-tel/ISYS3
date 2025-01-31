@@ -11,4 +11,3 @@ public class GameLauncher {
         SwingUtilities.invokeLater(GameSelectionFrame::new);
     }
 }
-
