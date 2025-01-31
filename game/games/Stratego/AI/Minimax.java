@@ -9,8 +9,18 @@ public class Minimax {
 
 
     private static final int MAX_DEPTH = 3; // Maximale diepte voor de zoekboom
+    private static String color;
+    private static String enemycolor;
+
 
     public static Move findBestMove(String[][] board, int currentPlayer) {
+        if (currentPlayer == 1) {
+            color = "Red";
+            enemycolor = "Blue";
+        } else {
+            color = "Blue";
+            enemycolor = "Red";
+        }
         return expectiminimax(board, currentPlayer,MAX_DEPTH, true);
     }
 
@@ -57,22 +67,16 @@ public class Minimax {
             return bestMove;
         }
     }
-    
 
     private static int evaluateBoard(String[][] board, int currentPlayer) {
         int score = 0;
-        String color = (currentPlayer == 1) ? "Red" : "Blue";
     
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 String piece = board[i][j];
-                if (piece != null && !piece.equals("Water") && !piece.equals("-") && !piece.equals(color)) {
+                if (piece != null && !piece.equals("Water") && !piece.equals("-")) {
                     int pieceValue = getPieceValue(piece);
-                    if (getPlayer(piece) == currentPlayer) {
-                        score += pieceValue;
-                    } else {
-                        score -= pieceValue;
-                    }
+                  score += pieceValue;
                 }
             }
         }
@@ -91,7 +95,8 @@ public class Minimax {
                     for (int[] direction : new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
                         int newX = i + direction[0];
                         int newY = j + direction[1];
-
+                        System.out.println("Checking move: " + i + " " + j + " " + newX + " " + newY);
+                        System.out.println(board[i][j]);
                         if (StrategoGame.isValidMove(i, j, newX, newY,board[i][j],currentPlayer, board, board.length )) {
                             System.out.println("Valid move found: " + i + " " + j + " " + newX + " " + newY);
                             moves.add(new Move(new int[]{i, j}, new int[]{newX, newY}));
@@ -116,24 +121,22 @@ public class Minimax {
         return newBoard;
     }
 
-    // private static boolean isValidMove(String[][] board, int x1, int y1, int x2, int y2) {
-    //     // Controleer of de zet binnen de grenzen is
-    //     if (x2 < 0 || x2 >= board.length || y2 < 0 || y2 >= board[0].length) {
-    //         return false;
-    //     }
-
-    //     // Controleer of het doelvak leeg is of een vijandelijk stuk bevat
-    //     String target = board[x2][y2];
-    //     return target == null || getPlayer(target) != getPlayer(board[x1][y1]);
-    // }
-
     private static int getPieceValue(String piece) {
-        if (piece == null) {
-            // Als piece null is, geef een standaardwaarde terug (bijvoorbeeld 0)
-            return -1;
+
+        if(piece.equals(enemycolor)){
+            return -5;
         }
         String[] parts = piece.split(" ");
+        if(parts.length < 3){
+            return 0;
+        }
         int intpiece = Integer.parseInt(parts[2]);
+        if (piece.contains("Flag")){ intpiece = -50; // Flag loss
+            }
+
+        if (piece.contains(enemycolor)) {
+            return -intpiece;
+        }
         return intpiece;
         }
     

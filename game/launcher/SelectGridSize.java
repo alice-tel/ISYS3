@@ -1,8 +1,9 @@
 package game.launcher;
 
-import game.games.Stratego.Tournament.StrategoGame;
-
 import javax.swing.*;
+
+import game.games.Stratego.StrategoGame;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
