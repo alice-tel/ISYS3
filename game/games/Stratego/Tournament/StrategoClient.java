@@ -4,6 +4,11 @@ import java.io.*;
 import java.net.*;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import game.games.Stratego.StrategoGame;
+import game.games.Stratego.AI.*;
 
 public class StrategoClient implements Runnable {
 
@@ -20,18 +25,7 @@ public class StrategoClient implements Runnable {
     private boolean active = false;
 
     private String[][] board = new String[8][8]; // 8x8 board
-<<<<<<< Updated upstream
     private final int MAX_DEPTH = 3; // Depth for Expectiminimax algorithm
-=======
-    private StrategoGame game;
-
-    public StrategoClient() {
-        game = new StrategoGame(8, true, false);
-        board = game.getSpeler1();
-        game.switchPlayer();
-        game.startBattlephase();
-    }
->>>>>>> Stashed changes
 
     @Override
     public void run() {
@@ -51,7 +45,6 @@ public class StrategoClient implements Runnable {
                 if (inputMessage.contains("MATCH")) {
                     placed = false;
                     active = true;
-<<<<<<< Updated upstream
                     initializeBoard();
                 } else if (inputMessage.contains("LOSS") || inputMessage.contains("WIN")) {
                     active = false;
@@ -59,43 +52,32 @@ public class StrategoClient implements Runnable {
                     System.out.println("Game ended, resubscribing...");
                     out.println("subscribe stratego");
                 } else if (inputMessage.contains("YOURTURN") && active) {
-=======
-                }else if (inputMessage.contains("Opponent Placed")) {
-                    System.out.println("oponent placed if");
-                    enemypiece(extractNumber(inputMessage));
-                } else if (inputMessage.contains("GAME MOVE")) {
-                    extractNumbers(inputMessage);
-                    
-                }
-                else if (inputMessage.contains("YOURTURN") && active) {
->>>>>>> Stashed changes
                     if (!placed) {
                         placed = true;
                         placePieces();
                     } else {
-<<<<<<< Updated upstream
                         calculateAndMakeMove();
                     }
-=======
-                        game.switchPlayer();
-                        calculateAndMakeMove(game.getMove());
-                        }
-                    }
-                    else if (inputMessage.contains("LOSS") || inputMessage.contains("WIN")) {
-                        active = false;
-                        // After the game ends, resubscribe
-                        System.out.println("Game ended, resubscribing...");
-                        game.resetboard();
-                        out.println("subscribe stratego");
-                    }
-                    System.out.println(inputMessage);
->>>>>>> Stashed changes
                 }
-                System.out.println(inputMessage);
             }
-        } catch (IOException e) {
+            catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static int extractNumber(String inputMessage) {
+        if (inputMessage == null) {
+            return -1; // Foutwaarde als de input null is
+        }
+
+        Pattern pattern = Pattern.compile("\\d+"); // Zoek naar een getal
+        Matcher matcher = pattern.matcher(inputMessage);
+
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group()); // Converteer naar int
+        }
+
+        return -1; // Geen nummer gevonden
     }
 
 <<<<<<< Updated upstream
@@ -150,14 +132,6 @@ public void handleenemymove(List<Integer> result){
         return scanner.nextLine();
     }
 
-    private void initializeBoard() {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                board[i][j] = "."; // Empty cell
-            }
-        }
-    }
-
 
     private void placePieces() {
         List<String> pieces = new ArrayList<>(Arrays.asList(
@@ -169,9 +143,30 @@ public void handleenemymove(List<Integer> result){
         // Now place the pieces at random positions on the bottom three rows
         int[] positions = getRandomPositions(pieces.size());
 
+
+
         for (int i = 0; i < pieces.size(); i++) {
             placePiece(positions[i], pieces.get(i));
+            placePiecelocal(positions[i], pieces.get(i));
         }
+
+    }
+
+private void enemypiece(int index) {
+    int col = index % 8;
+    int row = (index - col) / 8;
+    
+    game.setspeler1color(row, col);
+    board = game.getSpeler1();
+    }
+
+    private void placePiecelocal(int index, String piece) {
+        
+        int col = index % 8;
+        int row = (index - col) / 8;
+        
+        game.setspeler1(row, col, piece);
+        board = game.getSpeler1();
 
     }
 
@@ -189,147 +184,26 @@ public void handleenemymove(List<Integer> result){
 
 
     private void placePiece(int index, String piece) {
+
+
+
         out.println("place " + index + " " + piece);
     }
 
-    private void calculateAndMakeMove() {
+    private void calculateAndMakeMove(Move move) {
         // Generate all valid moves for the current board
-        List<int[]> validMoves = generateValidMoves(board);
-
-        if (validMoves.isEmpty()) {
-            System.out.println("No valid moves available.");
-            return;
-        }
-
-        // Pick a random valid move
-        int[] randomMove = validMoves.get(new Random().nextInt(validMoves.size()));
-        int from = randomMove[0];
-        int to = randomMove[1];
-
-        int fromRow = from / 8, fromCol = from % 8;
-        int toRow = to / 8, toCol = to % 8;
-
-        String movingPiece = board[fromRow][fromCol];
-        board[fromRow][fromCol] = "."; // Empty the source cell
-        board[toRow][toCol] = movingPiece; // Place the piece in the destination cell
+        int[] start = move.getFrom();
+        int[] end = move.getTo();
+       
+        int from = start[0] * 8 + start[1];
+        int to = end[0] * 8 + end[1];
 
         // Send the move to the server
         System.out.println("move " + from + " " + to);
         out.println("move " + from + " " + to);
 
     }
-
-
-    private List<int[]> generateValidMoves(String[][] currentBoard) {
-        List<int[]> validMoves = new ArrayList<>();
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                if (!currentBoard[row][col].equals(".")) { // Ignore empty spaces
-                    validMoves.addAll(getValidMovesForPiece(row, col, currentBoard[row][col], currentBoard));
-                }
-            }
-        }
-        return validMoves;
-    }
-
-    private List<int[]> getValidMovesForPiece(int row, int col, String piece, String[][] board) {
-        List<int[]> moves = new ArrayList<>();
-        int[] directions = {-1, 1}; // For vertical and horizontal moves
-
-        // Marshal, General, Colonel, Lieutenant, Captain, Sergeant (can move 1 square in any direction)
-        if (piece.equals("Marshal") || piece.equals("General") || piece.equals("Colonel") ||
-                piece.equals("Lieutenant") || piece.equals("Captain") || piece.equals("Sergeant")) {
-
-            for (int direction : directions) {
-                // Vertical moves (up/down)
-                if (row + direction >= 0 && row + direction < 8 && board[row + direction][col].equals(".")) {
-                    moves.add(new int[]{row * 8 + col, (row + direction) * 8 + col});
-                }
-                // Horizontal moves (left/right)
-                if (col + direction >= 0 && col + direction < 8 && board[row][col + direction].equals(".")) {
-                    moves.add(new int[]{row * 8 + col, row * 8 + (col + direction)});
-                }
-            }
-        }
-
-        // Miner (can move 1 square in any direction and defuse bombs)
-        else if (piece.equals("Miner")) {
-            for (int direction : directions) {
-                // Vertical moves (up/down)
-                if (row + direction >= 0 && row + direction < 8 && (board[row + direction][col].equals(".") || board[row + direction][col].equals("Bomb"))) {
-                    moves.add(new int[]{row * 8 + col, (row + direction) * 8 + col});
-                }
-                // Horizontal moves (left/right)
-                if (col + direction >= 0 && col + direction < 8 && (board[row][col + direction].equals(".") || board[row][col + direction].equals("Bomb"))) {
-                    moves.add(new int[]{row * 8 + col, row * 8 + (col + direction)});
-                }
-            }
-        }
-
-        // Scout (can move any number of squares in a straight line)
-        else if (piece.equals("Scout")) {
-            // Move vertically and horizontally in all directions
-            for (int direction : directions) {
-                for (int i = 1; i < 8; i++) {
-                    // Vertical moves (up/down)
-                    if (row + direction * i >= 0 && row + direction * i < 8 && board[row + direction * i][col].equals(".")) {
-                        moves.add(new int[]{row * 8 + col, (row + direction * i) * 8 + col});
-                    } else break; // Stop if obstacle is encountered
-
-                    // Horizontal moves (left/right)
-                    if (col + direction * i >= 0 && col + direction * i < 8 && board[row][col + direction * i].equals(".")) {
-                        moves.add(new int[]{row * 8 + col, row * 8 + (col + direction * i)});
-                    } else break; // Stop if obstacle is encountered
-                }
-            }
-        }
-
-        // Spy (can move 1 square in any direction, but can beat Marshal)
-        else if (piece.equals("Spy")) {
-            for (int direction : directions) {
-                // Vertical moves (up/down)
-                if (row + direction >= 0 && row + direction < 8 && board[row + direction][col].equals(".")) {
-                    moves.add(new int[]{row * 8 + col, (row + direction) * 8 + col});
-                }
-                // Horizontal moves (left/right)
-                if (col + direction >= 0 && col + direction < 8 && board[row][col + direction].equals(".")) {
-                    moves.add(new int[]{row * 8 + col, row * 8 + (col + direction)});
-                }
-            }
-        }
-
-        // Bomb (does not move)
-        // Flag (does not move)
-        return moves;
-    }
-
-
-    private String[][] simulateMove(String[][] currentBoard, int from, int to) {
-        String[][] newBoard = new String[8][8];
-        for (int i = 0; i < 8; i++) {
-            System.arraycopy(currentBoard[i], 0, newBoard[i], 0, 8);
-        }
-        int fromRow = from / 8, fromCol = from % 8;
-        int toRow = to / 8, toCol = to % 8;
-
-        newBoard[toRow][toCol] = newBoard[fromRow][fromCol];
-        newBoard[fromRow][fromCol] = ".";
-        return newBoard;
-    }
-
-    private int evaluateBoard(String[][] board) {
-        // Basic evaluation of pieces
-        int score = 0;
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                String piece = board[row][col];
-                if (piece.equals("Marshal")) score += 10;
-                else if (piece.equals("General")) score += 8;
-                else if (piece.equals("Flag")) score -= 50; // Flag loss
-            }
-        }
-        return score;
-    }
+ 
 
 
     public void shutdown() {
