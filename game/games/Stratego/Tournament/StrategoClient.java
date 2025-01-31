@@ -57,6 +57,7 @@ public class StrategoClient implements Runnable {
                     placed = false;
                     active = true;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                     initializeBoard();
                 } else if (inputMessage.contains("LOSS") || inputMessage.contains("WIN")) {
                     active = false;
@@ -65,6 +66,8 @@ public class StrategoClient implements Runnable {
                     out.println("subscribe stratego");
                 } else if (inputMessage.contains("YOURTURN") && active) {
 =======
+=======
+>>>>>>> Stashed changes
                 }else if (inputMessage.contains("Opponent Placed")) {
                     System.out.println("oponent placed if");
                     enemypiece(extractNumber(inputMessage));
@@ -79,9 +82,12 @@ public class StrategoClient implements Runnable {
                         placePieces();
                     } else {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                         calculateAndMakeMove();
                     }
 =======
+=======
+>>>>>>> Stashed changes
                         game.switchPlayer();
                         calculateAndMakeMove(game.getMove());
                         }

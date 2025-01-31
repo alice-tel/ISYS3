@@ -128,6 +128,39 @@ public class StrategoGame extends GameFramework {
         repaint();
     }
 
+<<<<<<< Updated upstream
+=======
+    public void switchPlayer(int currentplayer) {
+        // Switch the player
+        System.out.println("Switching player");
+        currentPlayer = currentplayer;
+        
+        String [][] currentboard = currentPlayer == 1 ? speler1 : speler2;
+        
+        new Updatebord(speler1);
+        revalidate();
+        repaint();
+
+        if(Battlephase){
+            if(AI && currentPlayer == 1){
+                AImove(speler1);
+                
+            }
+            if(AI2 && currentPlayer == 2){
+                AImove(speler2);
+            }
+        }
+        // Update the UI and status
+        if (!Battlephase) {
+            pionPanel1.setVisible(false);
+            add(pionPanel2, BorderLayout.EAST);
+        }
+        // Update the panel with pieces
+        revalidate();
+        repaint();
+    }
+
+>>>>>>> Stashed changes
 
     public void AImove(String[][] currentboard){
         Move bestMove = Minimax.findBestMove(currentboard, currentPlayer);
@@ -292,6 +325,12 @@ public class StrategoGame extends GameFramework {
             String currentpiece = null;
             String Opponentpiece = null;
 =======
+ public void resetboard(){
+    initializGrids();
+    currentPlayer = 1;
+
+ }
+
  public void resetboard(){
     initializGrids();
     currentPlayer = 1;
