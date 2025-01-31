@@ -20,7 +20,18 @@ public class StrategoClient implements Runnable {
     private boolean active = false;
 
     private String[][] board = new String[8][8]; // 8x8 board
+<<<<<<< Updated upstream
     private final int MAX_DEPTH = 3; // Depth for Expectiminimax algorithm
+=======
+    private StrategoGame game;
+
+    public StrategoClient() {
+        game = new StrategoGame(8, true, false);
+        board = game.getSpeler1();
+        game.switchPlayer();
+        game.startBattlephase();
+    }
+>>>>>>> Stashed changes
 
     @Override
     public void run() {
@@ -40,6 +51,7 @@ public class StrategoClient implements Runnable {
                 if (inputMessage.contains("MATCH")) {
                     placed = false;
                     active = true;
+<<<<<<< Updated upstream
                     initializeBoard();
                 } else if (inputMessage.contains("LOSS") || inputMessage.contains("WIN")) {
                     active = false;
@@ -47,12 +59,37 @@ public class StrategoClient implements Runnable {
                     System.out.println("Game ended, resubscribing...");
                     out.println("subscribe stratego");
                 } else if (inputMessage.contains("YOURTURN") && active) {
+=======
+                }else if (inputMessage.contains("Opponent Placed")) {
+                    System.out.println("oponent placed if");
+                    enemypiece(extractNumber(inputMessage));
+                } else if (inputMessage.contains("GAME MOVE")) {
+                    extractNumbers(inputMessage);
+                    
+                }
+                else if (inputMessage.contains("YOURTURN") && active) {
+>>>>>>> Stashed changes
                     if (!placed) {
                         placed = true;
                         placePieces();
                     } else {
+<<<<<<< Updated upstream
                         calculateAndMakeMove();
                     }
+=======
+                        game.switchPlayer();
+                        calculateAndMakeMove(game.getMove());
+                        }
+                    }
+                    else if (inputMessage.contains("LOSS") || inputMessage.contains("WIN")) {
+                        active = false;
+                        // After the game ends, resubscribe
+                        System.out.println("Game ended, resubscribing...");
+                        game.resetboard();
+                        out.println("subscribe stratego");
+                    }
+                    System.out.println(inputMessage);
+>>>>>>> Stashed changes
                 }
                 System.out.println(inputMessage);
             }
@@ -61,6 +98,52 @@ public class StrategoClient implements Runnable {
         }
     }
 
+<<<<<<< Updated upstream
+=======
+public void handleenemymove(List<Integer> result){
+
+    int from = result.get(0); // Eerste nummer
+    int to = result.get(1);   // Tweede nummer
+
+    int enemyformy = from % 8;
+    int enemyfromx = (from - enemyformy) /8;
+    int enemytoy = to %8;
+    int enemytox = (to - enemytoy) /8;
+
+    game.HandleMove(enemyfromx,enemyformy);
+    game.HandleMove(enemytox,enemytoy);
+    board = game.getSpeler1();
+}
+
+    public static List<Integer> extractNumbers(String input) {
+        List<Integer> numbers = new ArrayList<>();
+        Pattern pattern = Pattern.compile("\\d+");
+        Matcher matcher = pattern.matcher(input);
+
+        while (matcher.find()) {
+            numbers.add(Integer.parseInt(matcher.group()));
+        }
+
+        return numbers;
+    }
+
+
+    public static int extractNumber(String inputMessage) {
+        if (inputMessage == null) {
+            return -1; // Foutwaarde als de input null is
+        }
+
+        Pattern pattern = Pattern.compile("\\d+"); // Zoek naar een getal
+        Matcher matcher = pattern.matcher(inputMessage);
+
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group()); // Converteer naar int
+        }
+
+        return -1; // Geen nummer gevonden
+    }
+
+>>>>>>> Stashed changes
     private String getUserName() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter your name: ");
@@ -131,6 +214,7 @@ public class StrategoClient implements Runnable {
         board[toRow][toCol] = movingPiece; // Place the piece in the destination cell
 
         // Send the move to the server
+        System.out.println("move " + from + " " + to);
         out.println("move " + from + " " + to);
 
     }
