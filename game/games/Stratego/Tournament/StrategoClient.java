@@ -66,6 +66,9 @@ public class StrategoClient implements Runnable {
                     } else {
                         if (game.getcurrentPlayer() == 2) {
                             game.switchPlayer();}
+                        if (game.getcurrentPlayer() == 1){
+                            game.switchPlayer();
+                        }
                         calculateAndMakeMove(game.getMove());
                         }
                     }
