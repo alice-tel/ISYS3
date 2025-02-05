@@ -21,10 +21,10 @@ public class Minimax {
             color = "Blue";
             enemycolor = "Red";
         }
-        return expectiminimax(board, currentPlayer,MAX_DEPTH, true);
+        return minimax(board, currentPlayer,MAX_DEPTH, true);
     }
 
-    public static Move expectiminimax(String[][] board, int currentPlayer, int depth, boolean isMaximizingPlayer) {
+    public static Move minimax(String[][] board, int currentPlayer, int depth, boolean isMaximizingPlayer) {
         if (depth == 0) {
             // Bereken en retourneer de evaluatiewaarde van het bord
             return new Move(null, evaluateBoard(board, currentPlayer));
@@ -36,7 +36,7 @@ public class Minimax {
     
             for (Move move : generateValidMoves(board, currentPlayer)) {
                 String[][] newBoard = applyMove(board, move); // Pas de zet toe
-                Move result = expectiminimax(newBoard, currentPlayer, depth - 1, false); // Recursieve aanroep
+                Move result = minimax(newBoard, currentPlayer, depth - 1, false); // Recursieve aanroep
     
                 // Update de beste zet als deze beter is
                 if (result.value > bestMove.value) {
@@ -54,7 +54,7 @@ public class Minimax {
     
             for (Move move : generateValidMoves(board, 3 - currentPlayer)) {
                 String[][] newBoard = applyMove(board, move); // Pas de zet toe
-                Move result = expectiminimax(newBoard, currentPlayer, depth - 1, true); // Recursieve aanroep
+                Move result = minimax(newBoard, currentPlayer, depth - 1, true); // Recursieve aanroep
     
                 // Update de beste zet als deze slechter is
                 if (result.value < bestMove.value) {

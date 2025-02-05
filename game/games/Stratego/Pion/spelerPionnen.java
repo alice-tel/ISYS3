@@ -38,33 +38,33 @@ public class spelerPionnen {
 
     private void initializePionnen(int size) {
         if (size == 10){
-        voegPionnenToe("Marshal", 10, 1);
-        voegPionnenToe("General", 9, 1 );
-        voegPionnenToe("Colonel", 8, 2 );
-        voegPionnenToe("Major", 7, 3 );
-        voegPionnenToe("Captain", 6, 4);
-        voegPionnenToe("Lieutenant", 5, 4);
-        voegPionnenToe("Sergeant", 4, 4);
-        voegPionnenToe("Miner", 3, 5);
-        voegPionnenToe("Scout", 2, 8);
-        voegPionnenToe("Spy", 1, 1);
-        voegPionnenToe("Bomb", 11, 6);
-        voegPionnenToe("Flag", 0, 1);
+        voegPionnenToe("Marshal", 10, 1, new Normalmove(), new Attack());
+        voegPionnenToe("General", 9, 1, new Normalmove(), new Attack());
+        voegPionnenToe("Colonel", 8, 2 , new Normalmove(), new Attack());
+        voegPionnenToe("Major", 7, 3 , new Normalmove(), new Attack());
+        voegPionnenToe("Captain", 6, 4, new Normalmove(), new Attack());
+        voegPionnenToe("Lieutenant", 5, 4, new Normalmove(), new Attack());
+        voegPionnenToe("Sergeant", 4, 4, new Normalmove(), new Attack());
+        voegPionnenToe("Miner", 3, 5, new Normalmove(), new MinerAttack());
+        voegPionnenToe("Scout", 2, 8, new ScoutMove(), new Attack());
+        voegPionnenToe("Spy", 1, 1, new Normalmove(), new SpyAttack());
+        voegPionnenToe("Bomb", 11, 6, new noMove(), new noAttack());
+        voegPionnenToe("Flag", 0, 1, new noMove(), new noAttack());
         }
         if(size == 8){
-            voegPionnenToe("Marshal", 10, 1);
-            voegPionnenToe("General", 9, 1);
-            voegPionnenToe("Miner", 3, 2);
-            voegPionnenToe("Scout", 2, 2);
-            voegPionnenToe("Spy", 1, 1);
-            voegPionnenToe("Bomb", 11, 2);
-            voegPionnenToe("Flag", 0, 1);
+            voegPionnenToe("Marshal", 10, 1, new Normalmove(), new Attack());
+            voegPionnenToe("General", 9, 1, new Normalmove(), new Attack());
+            voegPionnenToe("Miner", 3, 2, new Normalmove(), new MinerAttack());
+            voegPionnenToe("Scout", 2, 2, new ScoutMove(), new Attack());
+            voegPionnenToe("Spy", 1, 1, new Normalmove(), new SpyAttack());
+            voegPionnenToe("Bomb", 11, 2, new noMove(), new noAttack());
+            voegPionnenToe("Flag", 0, 1, new noMove(), new noAttack());
             }
         }
 
-    private void voegPionnenToe(String naam, int waarde, int aantal) {
+    private void voegPionnenToe(String naam, int waarde, int aantal,IMoveStrategy moveStrategy,IAttackStrategy attackStrategy) {
         for (int i = 0; i < aantal; i++) {
-            pionnen.add(new Pion(naam, waarde,aantal));
+            pionnen.add(new Pion(naam, waarde,aantal,moveStrategy,attackStrategy));
         }
 
 

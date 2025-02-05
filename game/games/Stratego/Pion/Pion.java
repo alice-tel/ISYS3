@@ -10,7 +10,7 @@ public class Pion {
     private IMoveStrategy moveStrategy;
     private IAttackStrategy attackStrategy;
 
-    public Pion(String naam, int waarde,int aantal){
+    public Pion(String naam, int waarde,int aantal,IMoveStrategy moveStrategy,IAttackStrategy attackStrategy){
         this.naam = naam;
         this.waarde = waarde;
         this.aantal = aantal;
